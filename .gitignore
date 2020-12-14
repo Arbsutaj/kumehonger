@@ -236,4 +236,8 @@ dist/
 npm-debug.log
 yarn-error.log
 
+.idea/
+app/.babelrc
+app/.eslintrc.js
+
 # End of https://www.toptal.com/developers/gitignore/api/node,vuejs,intellij,maven
