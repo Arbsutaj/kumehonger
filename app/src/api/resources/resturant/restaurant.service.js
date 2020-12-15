@@ -2,7 +2,7 @@ import Joi from "joi";
 import Restaurant from "./restaurant.model";
 
 function getValidationForRestaurantEntity() {
-    return Joi.object().keys({
+    const schema = Joi.object().keys({
         name: Joi.string().required(),
         description: Joi.string().required(),
         rating: Joi.number()
@@ -12,9 +12,15 @@ function getValidationForRestaurantEntity() {
             .optional(),
         menus: Joi.array().optional(),
     });
+
+    return {schema};
 }
 
-function findById(id, populateFields) {
+async function findById(id) {
+    return Restaurant.findById(id);
+}
+
+async function findByIdWithSpecificPopulateFields(id, populateFields) {
     return Restaurant.findById({_id: id}).populate(populateFields);
 }
 
@@ -27,28 +33,28 @@ export default {
 
         return {value};
     },
-    findById(id) {
-        const restaurant = findById(id);
+    async findById(id) {
+        const restaurant = await findById(id);
         if (restaurant)
             return {restaurant};
 
-        return {error: 'Restaurant with id ' +id+' not found'};
+        return {error: 'Restaurant with id ' + id + ' not found'};
     },
-    addMenuToRestaurant(id, menu) {
-        const restaurantInDb = findById(id);
+    async addMenuToRestaurant(id, menu) {
+        const restaurantInDb = await findById(id);
         restaurantInDb.menus.push(menu);
         restaurantInDb.save();
     },
     findAll() {
         return Restaurant.find();
     },
-    getRestaurantWithMenus(id) {
+    async getRestaurantWithMenus(id) {
         const populateFields = 'menus';
-        const restaurant = findById(id, populateFields);
+        const restaurant = await findByIdWithSpecificPopulateFields(id, populateFields);
 
         if (restaurant)
             return {restaurant};
 
-        return {error: 'Restaurant with id ' +id+' not found'};
+        return {error: 'Restaurant with id ' + id + ' not found'};
     }
 }

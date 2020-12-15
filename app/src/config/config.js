@@ -1,3 +1,5 @@
+import passport from "passport";
+
 const config = {
   production: {
     secret: process.env.secret,
@@ -6,9 +8,17 @@ const config = {
   },
   development: {
     secret: 'I_AME_GERER',
-    MONGO_URI: 'mongodb://localhost/music_api',
+    MONGO_URI: 'mongodb://localhost/kumehonger',
     port: 3000,
+
   },
+};
+
+export const authentication = {
+  strategy: 'jwt',
+  isAuthenticated() {
+    return passport.authenticate(authentication.strategy, {session: false});
+  }
 };
 
 export const getConfig = env => config[env] || config.development;

@@ -1,11 +1,11 @@
 import userService from './user.service';
-import User, { STANDARD_ROLE } from './user.model';
+import User from './user.model';
 import jwt from '../../helpers/jwt';
 
 export default {
   async signUp(req, res) {
     try {
-      const { value, error } = userService.validateSignup(req.body);
+      const { value, error } = userService.validateSignUp(req.body);
       if (error) {
         return res.status(400).json(error);
       }
@@ -16,7 +16,7 @@ export default {
         firstName: value.firstName,
         lastName: value.lastName,
         password: encryptedPass,
-        role: value.role || STANDARD_ROLE,
+        role: value.role || Role.USER,
       });
       return res.json({ success: true });
     } catch (err) {

@@ -30,7 +30,7 @@ export default {
     async findById(req, res) {
         try {
             const {id} = req.params;
-            const {restaurant, error} = restaurantService.findById(id);
+            const {restaurant, error} = await restaurantService.findById(id);
 
             if (error)
                 throwError(404, res, error);
@@ -43,7 +43,7 @@ export default {
     async findByIdAndRetrieveMenus(req, res) {
         try {
             const {id} = req.params;
-            const {restaurant, error} = restaurantService.getRestaurantWithMenus(id);
+            const {restaurant, error} = await restaurantService.getRestaurantWithMenus(id);
 
             if (error)
                 throwError(404, res, error);

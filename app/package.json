@@ -1,7 +1,7 @@
 {
-  "name": "music-api",
+  "name": "kumehonger-api",
   "version": "1.0.0",
-  "description": "A Music Restful API for Egghead Course: Secure Restful API with Nodejs, and Mongoose",
+  "description": "An api for managing the restaurants nearby you.",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/app.js --exec babel-node --presets env",

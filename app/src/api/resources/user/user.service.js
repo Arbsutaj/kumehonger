@@ -2,14 +2,14 @@ import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 
 export default {
-  encryptPassword(palinText) {
+  encryptPassword(plainText) {
     const salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(palinText, salt);
+    return bcrypt.hashSync(plainText, salt);
   },
-  comparePassword(plainText, encrypedPassword) {
-    return bcrypt.compareSync(plainText, encrypedPassword);
+  comparePassword(plainText, encryptedPassword) {
+    return bcrypt.compareSync(plainText, encryptedPassword);
   },
-  validateSignup(body) {
+  validateSignUp(body) {
     const schema = Joi.object().keys({
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),

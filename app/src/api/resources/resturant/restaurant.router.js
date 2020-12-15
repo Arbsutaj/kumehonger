@@ -1,7 +1,7 @@
 import express from "express";
 import restaurantController from "./restaurant.controller";
-import passport from "passport";
+import {authentication} from "../../../config/config";
 
 export const restaurantRouter = express.Router();
-restaurantRouter.post('/', passport.authenticate('jwt', { session: false }), restaurantController.create);
-restaurantRouter.get('/:id', passport.authenticate('jwt', { session: false }), restaurantController.findOne);
+restaurantRouter.post('/', authentication.isAuthenticated(), restaurantController.create);
+restaurantRouter.get('/:id', authentication.isAuthenticated(), restaurantController.findById);
