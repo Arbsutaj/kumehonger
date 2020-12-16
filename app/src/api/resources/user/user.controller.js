@@ -1,51 +1,45 @@
 import userService from './user.service';
 import User from './user.model';
-import jwt from '../../helpers/jwt';
 
 export default {
-  async signUp(req, res) {
-    try {
-      const { value, error } = userService.validateSignUp(req.body);
-      if (error) {
-        return res.status(400).json(error);
-      }
-      const encryptedPass = userService.encryptPassword(value.password);
+    async signUp(req, res) {
+        try {
+            const {value, error} = await userService.validateSignUpRequest(req.body);
+            if (error)
+                return res.status(400).json(error);
 
-      const user = await User.create({
-        email: value.email,
-        firstName: value.firstName,
-        lastName: value.lastName,
-        password: encryptedPass,
-        role: value.role || Role.USER,
-      });
-      return res.json({ success: true });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-  },
-  async login(req, res) {
-    try {
-      const { value, error } = userService.validateLogin(req.body);
-      if (error) {
-        return res.status(400).json(error);
-      }
-      const user = await User.findOne({ email: value.email });
-      if (!user) {
-        return res.status(401).json({ err: 'unauthorized' });
-      }
-      const authenticated = userService.comparePassword(value.password, user.password);
-      if (!authenticated) {
-        return res.status(401).json({ err: 'unauthorized' });
-      }
-      const token = jwt.issue({ id: user._id }, '1d');
-      return res.json({ token });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-  },
-  authenticate(req, res) {
-    return res.json(req.user);
-  },
+            const { emailIsAlreadyUsed, exception } = await userService.isEmailAlreadyBeingUsed(value.email);
+            console.log(emailIsAlreadyUsed);
+            if (emailIsAlreadyUsed)
+                return res.status(exception.statusCode).json(exception.getJsonExceptionMessage());
+
+            const {user} = await userService.toEntity(value);
+            const userCreated = User.create(user);
+            const {userDto} = await userService.toDto(userCreated);
+
+            return res.json(userDto);
+        } catch (err) {
+            return res.status(500).send(err);
+        }
+    },
+    async login(req, res) {
+        try {
+            const {user, correctCredentialsError, validationError} = await userService.authenticateUser(req.body);
+            if (validationError)
+                return res.status(401).json({status: '400', error: validationError});
+            if (correctCredentialsError)
+                return res.status(401).json({status: '401', error: correctCredentialsError});
+
+            const {tokenPayload} = await userService.generateToken(user._id);
+
+            return res.status(200).json(tokenPayload);
+        } catch (err) {
+            return res.status(500).send(err);
+        }
+    },
+    async authenticate(req, res) {
+        const {userDto} = await userService.toDto(req.user);
+
+        return res.json(userDto);
+    },
 };

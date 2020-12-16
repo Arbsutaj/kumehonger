@@ -1,14 +1,7 @@
 import restaurantService from './restaurant.service';
 import Restaurant from './restaurant.model';
-
-function throwError(status, res, message) {
-    const error = {
-        status: status,
-        message: message,
-    };
-
-    return res.status(status).json(error);
-}
+import {isValidObjectId} from "../../helpers/utils";
+import {BadParameterException} from "../exception/bad-parameter-exception";
 
 export default {
     async create(req, res) {
@@ -30,10 +23,15 @@ export default {
     async findById(req, res) {
         try {
             const {id} = req.params;
-            const {restaurant, error} = await restaurantService.findById(id);
+            if (!isValidObjectId(id)){
+                const error = new BadParameterException('id', id);
 
+                return res.status(error.statusCode).json(error.getJsonBadParameterExceptionMessage());
+            }
+
+            const {restaurant, error} = await restaurantService.findById(id);
             if (error)
-                throwError(404, res, error);
+               return res.status(error.statusCode).json(error.getJsonNotFoundException());
 
             return res.status(200).json(restaurant);
         } catch (err) {
@@ -46,11 +44,19 @@ export default {
             const {restaurant, error} = await restaurantService.getRestaurantWithMenus(id);
 
             if (error)
-                throwError(404, res, error);
+                res.status(error.status).json(error.getJsonNotFoundException());
 
             return res.status(200).json(restaurant);
         } catch (err) {
             return res.status(500).send(err);
+        }
+    },
+    async findAll(req, res) {
+        try {
+            const restaurants = await restaurantService.findAll();
+            return res.status(200).json(restaurants);
+        } catch(err) {
+
         }
     }
 }

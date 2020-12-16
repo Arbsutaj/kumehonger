@@ -1,5 +1,6 @@
 import Joi from "joi";
 import Restaurant from "./restaurant.model";
+import {NotFoundException} from "../exception/not-found-exception";
 
 function getValidationForRestaurantEntity() {
     const schema = Joi.object().keys({
@@ -20,6 +21,8 @@ async function findById(id) {
     return Restaurant.findById(id);
 }
 
+export const entityType = 'Restaurant';
+
 async function findByIdWithSpecificPopulateFields(id, populateFields) {
     return Restaurant.findById({_id: id}).populate(populateFields);
 }
@@ -38,15 +41,16 @@ export default {
         if (restaurant)
             return {restaurant};
 
-        return {error: 'Restaurant with id ' + id + ' not found'};
+        const error = new NotFoundException(id,entityType);
+        return {error};
     },
     async addMenuToRestaurant(id, menu) {
         const restaurantInDb = await findById(id);
         restaurantInDb.menus.push(menu);
         restaurantInDb.save();
     },
-    findAll() {
-        return Restaurant.find();
+    async findAll() {
+        return Restaurant.find({});
     },
     async getRestaurantWithMenus(id) {
         const populateFields = 'menus';
@@ -55,6 +59,11 @@ export default {
         if (restaurant)
             return {restaurant};
 
-        return {error: 'Restaurant with id ' + id + ' not found'};
-    }
+        const error = new NotFoundException(id, entityType);
+        return {error};
+    },
+    async findRestaurantsByOwnerId(ownerId) {
+        return Restaurant.find({owner: ownerId});
+    },
+
 }
