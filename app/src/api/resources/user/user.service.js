@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 import User from "./user.model";
-import jwt from "../../helpers/jwt";
 import {Role} from "../../middlewares/role";
 import {Exception} from "../exception/exception";
 
@@ -69,7 +68,7 @@ export default {
 
         return {value};
     },
-    async authenticateUser(loginRequest) {
+    async validateLoginRequest(loginRequest) {
         const {schema} = getValidationForLoginRequest();
         const {value, validationError} = Joi.validate(loginRequest, schema);
         if (validationError && validationError.details) {
@@ -104,14 +103,7 @@ export default {
 
         return {userDto};
     },
-    async generateToken(id) {
-        const token = jwt.issue({id: id}, '1d');
-        const tokenPayload = {
-            type: 'Bearer',
-            token: token
-        };
-        return {tokenPayload};
-    },
+
     async isEmailAlreadyBeingUsed(email) {
         const {user} = await findByEmail(email);
 
