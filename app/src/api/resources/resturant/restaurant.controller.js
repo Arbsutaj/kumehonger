@@ -1,6 +1,6 @@
 import restaurantService from './restaurant.service';
 import Restaurant from './restaurant.model';
-import {isValidObjectId} from "../../helpers/utils";
+import {isValidObjectId, returnInternalException, returnOkResponse} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
 export default {
@@ -14,10 +14,9 @@ export default {
             const restaurantToCreate = Object.assign({}, value, {owner: req.user._id});
             const restaurantCreated = await Restaurant.create(restaurantToCreate);
 
-            return res.json(restaurantCreated);
+            returnOkResponse(res, restaurantCreated);
         } catch (err) {
-            console.error(err);
-            return res.status(500).send(err);
+            returnInternalException(res);
         }
     },
     async findById(req, res) {
@@ -33,9 +32,9 @@ export default {
             if (error)
                return res.status(error.statusCode).json(error.getJsonNotFoundException());
 
-            return res.status(200).json(restaurant);
+            returnOkResponse(res, restaurant);
         } catch (err) {
-            return res.status(500).send(err);
+            returnInternalException(res);
         }
     },
     async findByIdAndRetrieveMenus(req, res) {
@@ -46,17 +45,17 @@ export default {
             if (error)
                 res.status(error.status).json(error.getJsonNotFoundException());
 
-            return res.status(200).json(restaurant);
+            returnOkResponse(res, restaurant);
         } catch (err) {
-            return res.status(500).send(err);
+            returnInternalException(res);
         }
     },
     async findAll(req, res) {
         try {
             const restaurants = await restaurantService.findAll();
-            return res.status(200).json(restaurants);
+            returnOkResponse(res, restaurants);
         } catch(err) {
-
+            returnInternalException(res);
         }
     }
 }

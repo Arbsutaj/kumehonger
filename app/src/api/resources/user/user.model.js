@@ -24,6 +24,11 @@ const userSchema = new Schema({
     required: true,
     type: Number,
   },
+  active: {
+    type: Boolean,
+    default: true,
+    required: true
+  }
 });
 
 export default mongoose.model('User', userSchema);

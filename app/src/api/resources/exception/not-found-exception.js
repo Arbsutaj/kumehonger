@@ -5,7 +5,7 @@ export class NotFoundException{
         this.statusCode = 404;
     }
 
-    getJsonNotFoundException() {
+    getJsonNotFoundExceptionMessage() {
         return {status: this.statusCode, statusDescription: 'Bad Request', message: this.entityType + ' with id' + this.entityId + ' was not found'};
     }
 }
