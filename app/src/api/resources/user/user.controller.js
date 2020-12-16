@@ -14,11 +14,12 @@ export default {
                 return res.status(exception.statusCode).json(exception.getJsonExceptionMessage());
 
             const {user} = await userService.toEntity(value);
-            const userCreated = User.create(user);
+            const userCreated = await User.create(user);
             const {userDto} = await userService.toDto(userCreated);
 
             return res.json(userDto);
         } catch (err) {
+            console.log(err);
             return res.status(500).send(err);
         }
     },
