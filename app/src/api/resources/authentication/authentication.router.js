@@ -4,4 +4,4 @@ import authenticationController from './authentication.controller';
 
 export const authenticationRouter = express.Router();
 authenticationRouter.post('/login', authenticationController.login);
-authenticationRouter.post('/me', authentication.isAuthenticated(),authenticationController.getLoggedInUser);
+authenticationRouter.get('/me', authentication.isAuthenticated(), authenticationController.getLoggedInUser);

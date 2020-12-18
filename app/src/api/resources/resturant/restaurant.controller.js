@@ -37,7 +37,7 @@ export default {
             const {restaurant, notFoundException} = await restaurantService.findById(id);
             if (notFoundException)
                 return exceptionResponse(res, notFoundException);
-
+          
             return okResponse(res, restaurant);
         } catch (err) {
             return internalExceptionResponse(res);
@@ -51,7 +51,7 @@ export default {
             if (notFoundException || badParameterException) {
                 if (badParameterException)
                     return exceptionResponse(res, badParameterException);
-
+              
                 return exceptionResponse(res, notFoundException);
             }
 
@@ -63,6 +63,7 @@ export default {
     async findAll(req, res) {
         try {
             const restaurants = await restaurantService.findAll();
+          
             return okResponse(res, restaurants);
         } catch (err) {
             return internalExceptionResponse(res);
