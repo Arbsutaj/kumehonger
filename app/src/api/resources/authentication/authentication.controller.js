@@ -1,6 +1,6 @@
 import userService from "../user/user.service";
 import authenticationService from "./authentication.service";
-import {returnInternalExceptionResponse, returnOkResponse} from "../../helpers/utils";
+import {OkResponse, returnInternalExceptionResponse} from "../../helpers/utils";
 
 export default {
     async login(req, res) {
@@ -13,7 +13,7 @@ export default {
 
             const {tokenPayload} = authenticationService.generateToken(user._id);
 
-            returnOkResponse(res, tokenPayload);
+            return OkResponse(res, tokenPayload);
         } catch (err) {
             returnInternalExceptionResponse(res);
         }
@@ -21,6 +21,6 @@ export default {
     async getLoggedInUser(req, res) {
         const {userDto} = await userService.toDto(req.user);
 
-        returnOkResponse(res, userDto);
+        return OkResponse(res, userDto);
     }
 }

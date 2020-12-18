@@ -1,9 +1,8 @@
 import userService from './user.service';
 import User from './user.model';
 import {
-    isValidObjectId, returnExceptionResponse,
-    returnInternalExceptionResponse,
-    returnOkResponse
+    exceptionResponse, internalExceptionResponse,
+    isValidObjectId, okResponse, validationExceptionResponse,
 } from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
@@ -12,19 +11,19 @@ export default {
         try {
             const {value, error} = await userService.validateSignUpRequest(req.body);
             if (error)
-                return res.status(400).json(error);
+                return validationExceptionResponse(res, error)
 
             const {emailIsAlreadyUsed, exception} = await userService.isEmailAlreadyBeingUsed(value.email);
             if (emailIsAlreadyUsed)
-                returnExceptionResponse(res, exception);
+                return exceptionResponse(res, exception);
 
             const {user} = await userService.toEntity(value);
             const userCreated = await User.create(user);
             const {userDto} = await userService.toDto(userCreated);
 
-            return res.json(userDto);
+            return okResponse(res, userDto);
         } catch (err) {
-            returnInternalExceptionResponse(res);
+            return internalExceptionResponse(res);
         }
     },
     async findById(req, res) {
@@ -33,29 +32,29 @@ export default {
             if (!isValidObjectId(id)) {
                 const error = new BadParameterException('id', id);
 
-                returnExceptionResponse(res, error);
+                return exceptionResponse(res, error);
             }
 
             const {user, exception} = await userService.findById();
             if (exception)
-                returnExceptionResponse(res, exception);
+                return exceptionResponse(res, exception);
 
-            returnOkResponse(res, user);
+            return okResponse(res, user);
         } catch (err) {
-            returnInternalExceptionResponse(res);
+            return internalExceptionResponse(res);
         }
     },
     async findAll(req, res) {
         try {
             const {isAdmin, notAuthorizedException} = await userService.checkIfUserIsAdmin(req.user);
             if (notAuthorizedException)
-                returnExceptionResponse(res, notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
 
             const {users} = await userService.findAll();
 
-            returnOkResponse(res, users);
+            return okResponse(res, users);
         } catch (err) {
-            returnInternalExceptionResponse(res);
+            return internalExceptionResponse(res);
         }
     },
     async update(req, res) {
@@ -65,14 +64,14 @@ export default {
 
             if (notAuthorizedException || error) {
                 if (error)
-                    return res.status(400).json(error);
+                    return validationExceptionResponse(res, error);
 
-                returnExceptionResponse(res, notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
             }
 
-            returnOkResponse(res, userDto);
+            return okResponse(res, userDto);
         } catch (err) {
-            returnInternalExceptionResponse(res);
+            return internalExceptionResponse(res);
         }
     },
     async deactivateUser(req, res) {
@@ -82,14 +81,14 @@ export default {
             const {deactivatedUserDto, notAuthorizedException, notFoundException} = await userService.deactivateUser(id, req.user, req.body);
             if (notFoundException || notAuthorizedException) {
                 if (notFoundException)
-                    returnExceptionResponse(res, notFoundException);
+                    return exceptionResponse(res, notFoundException);
 
-                returnExceptionResponse(res, notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
             }
 
-            returnOkResponse(res, deactivatedUserDto);
+            return okResponse(res, deactivatedUserDto);
         } catch (err) {
-            returnInternalExceptionResponse(res);
+            return internalExceptionResponse(res);
         }
     }
 };

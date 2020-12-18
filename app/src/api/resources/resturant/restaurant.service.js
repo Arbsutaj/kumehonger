@@ -1,9 +1,6 @@
 import Joi from "joi";
 import Restaurant from "./restaurant.model";
-import {NotFoundException} from "../exception/not-found-exception";
 import {NotAuthorizedException} from "../exception/not-authorized-exception";
-import fs from 'fs';
-import menuService from "../menu/menu.service";
 import {isValidObjectId, throwNotFoundException} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
