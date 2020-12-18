@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import User from "./user.model";
 import {Role} from "../../middlewares/role";
 import {Exception} from "../exception/exception";
+import {NotFoundException} from "../exception/not-found-exception";
+import {NotAuthorizedException} from "../exception/not-authorized-exception";
 
 async function validateUserAuthentication(email, password) {
     const user = await User.findOne({email: email});
@@ -57,8 +59,54 @@ async function findByEmail(email) {
     return {user};
 }
 
-export default {
+async function findById(id) {
+    const userInDb = await User.findById(id);
+    if (userInDb)
+        return {userInDb};
 
+    const notFoundException = new NotFoundException(id, entityType);
+    return {notFoundException};
+}
+
+async function toUpdateEntity(userDto) {
+    return {
+        firstName: userDto.name,
+        lastName: userDto.lastName,
+        email: userDto.email
+    }
+}
+
+async function toDto(user) {
+    const userDto = {
+        id: user._id,
+        name: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+    };
+
+    return {userDto};
+}
+
+async function validateUpdateEntity(user) {
+    const schema = Joi.object().keys({
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        email: Joi.string()
+            .email()
+            .required(),
+        role: Joi.number().integer().optional(),
+    });
+
+    const {value, error} = Joi.validate(user, schema);
+    if (error && error.details)
+        return {error};
+
+    return {value};
+}
+
+export const entityType = 'User';
+export default {
     async validateSignUpRequest(signUpRequest) {
         const {schema} = getValidationForUserEntity();
         const {value, error} = Joi.validate(signUpRequest, schema);
@@ -88,31 +136,79 @@ export default {
             lastName: request.lastName,
             email: request.email,
             password: encryptPassword(request.password),
-            role: request.role || Role.USER
+            role: request.role || Role.USER,
+            active: request.active || true
         };
 
         return {user};
     },
     async toDto(entity) {
-        const userDto = {
-            name: entity.firstName,
-            lastName: entity.lastName,
-            email: entity.email,
-            role: entity.role
-        };
+        const {userDto} = toDto(entity);
 
         return {userDto};
     },
-
     async isEmailAlreadyBeingUsed(email) {
         const {user} = await findByEmail(email);
 
-        if (user){
+        if (user) {
             const exception = new Exception(400, 'User with this email already exists!');
             return {emailIsAlreadyUsed: true, exception};
 
         }
 
         return {emailIsAlreadyUsed: false};
+    },
+    async findById(id) {
+        const {userInDb, notFoundException} = await findById(id);
+
+        if (notFoundException)
+            return {exception: notFoundException};
+
+        return {user: userInDb};
+    },
+    async findAll() {
+        const users = await User.find({active: true});
+
+        return {users};
+    },
+    async update(user, id, userRequest) {
+        if (!user._id.equals(id)) {
+            const notAuthorizedException = new NotAuthorizedException('You cannot update another user!');
+            return {notAuthorizedException};
+        }
+
+        const userToUpdate = await toUpdateEntity(userRequest, user);
+        const {value, error} = await validateUpdateEntity(userToUpdate);
+        if (error)
+            return {error};
+        const userUpdated = await User.findOneAndUpdate({_id: id}, userToUpdate, {new: true});
+        const {userDto} = await toDto(userUpdated);
+
+        return {userDto};
+    },
+    async checkIfUserIsAdmin(user) {
+        if (user.role !== Role.ADMIN) {
+            const notAuthorizedException = new NotAuthorizedException('User is not an admin!');
+            return {notAuthorizedException};
+        }
+
+        return {isAdmin: true};
+    },
+    async deactivateUser(id, user, deactivateRequest) {
+        if (!user._id.equals(id)) {
+            const notAuthorizedException = new NotAuthorizedException('You cannot deactivate another user!');
+
+            return {notAuthorizedException};
+        }
+
+        const deactivatedUser = await User.findOneAndUpdate({_id: id}, {active: false}, {new: true});
+        if (!deactivatedUser) {
+            const notFoundException = new NotFoundException(id, entityType);
+
+            return {notFoundException};
+        }
+
+        const userDto = await toDto(user);
+        return {deactivatedUserDto: userDto};
     }
 };

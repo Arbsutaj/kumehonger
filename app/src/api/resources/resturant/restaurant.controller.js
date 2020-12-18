@@ -1,6 +1,11 @@
 import restaurantService from './restaurant.service';
 import Restaurant from './restaurant.model';
-import {isValidObjectId} from "../../helpers/utils";
+import {
+    isValidObjectId,
+    returnExceptionResponse,
+    returnInternalExceptionResponse,
+    returnOkResponse
+} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
 export default {
@@ -14,49 +19,73 @@ export default {
             const restaurantToCreate = Object.assign({}, value, {owner: req.user._id});
             const restaurantCreated = await Restaurant.create(restaurantToCreate);
 
-            return res.json(restaurantCreated);
+            returnOkResponse(res, restaurantCreated);
         } catch (err) {
-            console.error(err);
-            return res.status(500).send(err);
+            returnInternalExceptionResponse(res);
         }
     },
     async findById(req, res) {
         try {
             const {id} = req.params;
-            if (!isValidObjectId(id)){
+            if (!isValidObjectId(id)) {
                 const error = new BadParameterException('id', id);
 
-                return res.status(error.statusCode).json(error.getJsonBadParameterExceptionMessage());
+                returnExceptionResponse(res, error);
             }
 
-            const {restaurant, error} = await restaurantService.findById(id);
-            if (error)
-               return res.status(error.statusCode).json(error.getJsonNotFoundException());
+            const {restaurant, notFoundException} = await restaurantService.findById(id);
+            if (notFoundException)
+                returnExceptionResponse(res, notFoundException);
 
-            return res.status(200).json(restaurant);
+            returnOkResponse(res, restaurant);
         } catch (err) {
-            return res.status(500).send(err);
+            returnInternalExceptionResponse(res);
         }
     },
     async findByIdAndRetrieveMenus(req, res) {
         try {
             const {id} = req.params;
-            const {restaurant, error} = await restaurantService.getRestaurantWithMenus(id);
+            const {restaurant, notFoundException, badParameterException} = await restaurantService.getRestaurantWithMenus(id);
 
-            if (error)
-                res.status(error.status).json(error.getJsonNotFoundException());
+            if (notFoundException || badParameterException) {
+                if (badParameterException)
+                    returnExceptionResponse(res, badParameterException);
 
-            return res.status(200).json(restaurant);
+                returnExceptionResponse(res, notFoundException);
+            }
+
+            returnOkResponse(res, restaurant);
         } catch (err) {
-            return res.status(500).send(err);
+            returnInternalExceptionResponse(res);
         }
     },
     async findAll(req, res) {
         try {
             const restaurants = await restaurantService.findAll();
-            return res.status(200).json(restaurants);
-        } catch(err) {
+            returnOkResponse(res, restaurants);
+        } catch (err) {
+            returnInternalExceptionResponse(res);
+        }
+    },
+    async update(req, res) {
+        try {
+            const {id} = req.params;
 
+            const {restaurantDto, notFoundException, unAuthorizedException, error} = await restaurantService.update(id, req.user._id, req.body);
+            if (notFoundException || unAuthorizedException || error) {
+                if (notFoundException)
+                    returnExceptionResponse(res, notFoundException);
+
+                if (unAuthorizedException)
+                    returnExceptionResponse(res, unAuthorizedException);
+
+                if (error)
+                    return res.status(400).json(error);
+            }
+
+            returnOkResponse(res, restaurantDto);
+        } catch (err) {
+            returnInternalExceptionResponse(res);
         }
     }
 }
