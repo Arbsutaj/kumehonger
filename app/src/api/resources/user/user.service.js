@@ -2,13 +2,13 @@ import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 import User from "./user.model";
 import {Role} from "../../middlewares/role";
-import {Exception} from "../exception/exception";
 import {NotFoundException} from "../exception/not-found-exception";
 import {NotAuthorizedException} from "../exception/not-authorized-exception";
+import {BadParameterException} from "../exception/bad-parameter-exception";
 
 async function validateUserAuthentication(email, password) {
     const user = await User.findOne({email: email});
-    const correctCredentialsError = 'Email or password incorrect!';
+    const correctCredentialsError = new NotAuthorizedException('Email or password incorrect!');
     if (!user)
         return {correctCredentialsError};
 
@@ -82,7 +82,8 @@ async function toDto(user) {
         name: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role
+        role: user.role,
+        active: user.active
     };
 
     return {userDto};
@@ -151,9 +152,8 @@ export default {
         const {user} = await findByEmail(email);
 
         if (user) {
-            const exception = new Exception(400, 'User with this email already exists!');
+            const exception = new BadParameterException('email', 'User with this email already exists!');
             return {emailIsAlreadyUsed: true, exception};
-
         }
 
         return {emailIsAlreadyUsed: false};
