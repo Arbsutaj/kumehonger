@@ -1,12 +1,7 @@
-export class BadParameterException {
-    constructor(parameterName, parameterValue) {
-        this.statusCode = 400;
-        this.parameterName = parameterName;
-        this.parameterValue = parameterValue;
-        this.statusDescription = 'Bad parameter';
-    }
+import {Exception} from "./exception";
 
-    getJsonBadParameterExceptionMessage() {
-        return {status: this.statusCode, statusDescription: this.statusDescription, message: 'Wrong value: ' + this.parameterValue + ' for \'' + this.parameterName + '\' parameter'};
+export class BadParameterException extends Exception {
+    constructor(parameterName, parameterValue) {
+        super(400, 'Wrong value: ' + parameterValue + ' for \'' + parameterName + '\' parameter');
     }
 }

@@ -1,7 +1,7 @@
 import jwt from "../../helpers/jwt";
 
 export default {
-    async generateToken(id) {
+    generateToken(id) {
         const token = jwt.issue({id: id}, '1d');
         const tokenPayload = {
             type: 'Bearer',
