@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An api for managing the restaurants nearby you.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/app.js --exec babel-node --presets env",
     "build": "babel src -d dist --source-maps inline --copy-files",

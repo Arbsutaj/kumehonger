@@ -1,6 +1,7 @@
-export class NotAuthorizedException {
+import {Exception} from "./exception";
+
+export class NotAuthorizedException extends Exception {
     constructor(message) {
-        this.statusCode = 401;
-        this.message = message;
+        super(401, message);
     }
 }

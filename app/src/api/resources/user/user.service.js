@@ -159,7 +159,7 @@ export default {
         return {emailIsAlreadyUsed: false};
     },
     async findById(id) {
-        const {userInDb, notFoundException} = await User.findById(id);
+        const {userInDb, notFoundException} = await findById(id);
 
         if (notFoundException)
             return {exception: notFoundException};

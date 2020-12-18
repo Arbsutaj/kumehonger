@@ -1,6 +1,9 @@
 import userService from './user.service';
 import User from './user.model';
-import {isValidObjectId, returnInternalException, returnOkResponse} from "../../helpers/utils";
+import {
+    exceptionResponse, internalExceptionResponse,
+    isValidObjectId, okResponse, validationExceptionResponse,
+} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
 export default {
@@ -8,19 +11,19 @@ export default {
         try {
             const {value, error} = await userService.validateSignUpRequest(req.body);
             if (error)
-                return res.status(400).json(error);
+                return validationExceptionResponse(res, error)
 
             const {emailIsAlreadyUsed, exception} = await userService.isEmailAlreadyBeingUsed(value.email);
             if (emailIsAlreadyUsed)
-                return res.status(exception.statusCode).json(exception.getJsonExceptionMessage());
+                return exceptionResponse(res, exception);
 
             const {user} = await userService.toEntity(value);
             const userCreated = await User.create(user);
             const {userDto} = await userService.toDto(userCreated);
 
-            return res.json(userDto);
+            return okResponse(res, userDto);
         } catch (err) {
-            returnInternalException(res);
+            return internalExceptionResponse(res);
         }
     },
     async findById(req, res) {
@@ -29,29 +32,29 @@ export default {
             if (!isValidObjectId(id)) {
                 const error = new BadParameterException('id', id);
 
-                return res.status(error.statusCode).json(error.getJsonBadParameterExceptionMessage());
+                return exceptionResponse(res, error);
             }
 
             const {user, exception} = await userService.findById();
             if (exception)
-                return res.status(exception.statusCode).json(exception.getJsonNotFoundExceptionMessage());
+                return exceptionResponse(res, exception);
 
-            returnOkResponse(res, user);
+            return okResponse(res, user);
         } catch (err) {
-            returnInternalException(res);
+            return internalExceptionResponse(res);
         }
     },
     async findAll(req, res) {
         try {
             const {isAdmin, notAuthorizedException} = await userService.checkIfUserIsAdmin(req.user);
             if (notAuthorizedException)
-                return res.status(notAuthorizedException.statusCode).json(notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
 
             const {users} = await userService.findAll();
 
-            returnOkResponse(res, users);
+            return okResponse(res, users);
         } catch (err) {
-            returnInternalException(res);
+            return internalExceptionResponse(res);
         }
     },
     async update(req, res) {
@@ -61,16 +64,14 @@ export default {
 
             if (notAuthorizedException || error) {
                 if (error)
-                    return res.status(400).json(error);
+                    return validationExceptionResponse(res, error);
 
-                return res.status(notAuthorizedException.statusCode).json(notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
             }
 
-
-            returnOkResponse(res, userDto);
+            return okResponse(res, userDto);
         } catch (err) {
-            console.log(err);
-            returnInternalException(res);
+            return internalExceptionResponse(res);
         }
     },
     async deactivateUser(req, res) {
@@ -80,14 +81,14 @@ export default {
             const {deactivatedUserDto, notAuthorizedException, notFoundException} = await userService.deactivateUser(id, req.user, req.body);
             if (notFoundException || notAuthorizedException) {
                 if (notFoundException)
-                    return res.status(notFoundException.statusCode).json(notFoundException.getJsonNotFoundExceptionMessage());
+                    return exceptionResponse(res, notFoundException);
 
-                return res.status(notAuthorizedException.statusCode).json(notAuthorizedException);
+                return exceptionResponse(res, notAuthorizedException);
             }
 
-            returnOkResponse(res, deactivatedUserDto);
+            return okResponse(res, deactivatedUserDto);
         } catch (err) {
-            returnInternalException(res);
+            return internalExceptionResponse(res);
         }
     }
 };
