@@ -1,29 +1,26 @@
 import Menu from "../menu/menu.model";
-import Restaurant from '../resturant/restaurant.model';
 import restaurantService from '../resturant/restaurant.service';
+import {returnExceptionResponse, returnInternalExceptionResponse} from "../../helpers/utils";
 
 export default {
     async create(req, res) {
         try {
-            const { restaurantId } = req.body.restaurant;
+            const restaurantId  = req.body.restaurant;
             const menuCreated = await Menu.create(req.body);
-            restaurantService.addMenuToRestaurant(restaurantId, menuCreated);
+            const {notFoundException, restaurant} = await restaurantService.addMenuToRestaurant(restaurantId, menuCreated);
+            if (notFoundException)
+                returnExceptionResponse(res, notFoundException);
 
             return res.json(menuCreated);
         } catch (err) {
-            console.error(err);
-            return res.status(500).send(err);
+            returnInternalExceptionResponse(res);
         }
     },
     async findOne(req, res) {
         try {
             return res.status(200).send("arbi");
         } catch (err) {
-            return res.status(500).send(err);
+            returnInternalExceptionResponse(res);
         }
     }
-}
-
-function addMenuToRestaurant(menu, restaurantId) {
-
 }

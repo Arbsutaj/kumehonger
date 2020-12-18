@@ -16,6 +16,7 @@ const restaurantSchema = new Schema({
         default: 0,
         min: 0,
         max: 5,
+        required: true
     },
     menus: [{
         type: mongoose.Schema.Types.ObjectId,

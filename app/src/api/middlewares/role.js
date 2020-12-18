@@ -1,5 +1,5 @@
-export class Role {
-    static USER = 1;
-    static ADMIN = 2;
-    static MANAGER = 3;
-}
+export const Role = {
+    USER: 1,
+    ADMIN: 2,
+    MANAGER: 3
+};
