@@ -2,13 +2,13 @@
     <vs-dialog prevent-close not-close v-model="active">
         <template #header>
             <h4 class="not-margin">
-                Welcome to <b>Vuesax</b>
+                Welcome to <b>Kumehonger</b>
             </h4>
         </template>
 
 
         <div class="con-form">
-            <vs-input v-model="loginRequest.username" placeholder="Username">
+            <vs-input v-model="loginRequest.email" placeholder="Email">
                 <template #icon>
                     <box-icon name="user"></box-icon>
                 </template>
@@ -43,23 +43,16 @@
     export default {
         name: 'Login',
         props: {
-            msg: String
         },
         data: () => ({
             loginRequest: new LoginRequest(),
-            username: '',
-            password: '',
-            checkbox1: '',
             active: true,
         }),
         methods: {
             signIn: function() {
-                console.log(this.loginRequest);
-                console.log(this.loginRequest.username);
-                console.log(this.loginRequest.password);
-                this.axios.post('http://localhost:3000/users/login', this.loginRequest).then((data)=>{
-                    console.log(data);
-                })
+                this.$store.dispatch('AUTH_LOGIN', this.loginRequest).then(() => {
+                    this.$router.push('/');
+                });
             }
         }
     }

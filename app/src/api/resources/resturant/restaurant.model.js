@@ -23,6 +23,10 @@ const restaurantSchema = new Schema({
         ref: 'Menu',
         required: false,
     }],
+    logo: {
+        type: Buffer,
+        required: true
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -5,6 +5,7 @@ import {
     internalExceptionResponse,
     isValidObjectId,
     okResponse,
+    toBinaryData,
     validationExceptionResponse
 } from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
@@ -12,15 +13,18 @@ import {BadParameterException} from "../exception/bad-parameter-exception";
 export default {
     async create(req, res) {
         try {
-            const {value, error} = restaurantService.validateRestaurant(req.body);
+            const {value, error} = await restaurantService.validateRestaurant(req.body);
 
             if (error && error.details)
-                return res.status(400).json(error);
+                return validationExceptionResponse(res, error);
 
-            const restaurantToCreate = Object.assign({}, value, {owner: req.user._id});
+            const restaurantToCreate = Object.assign({}, value, {
+                owner: req.user._id,
+                logo: toBinaryData(req.body.logo)
+            });
             const restaurantCreated = await Restaurant.create(restaurantToCreate);
 
-            return okResponse(res, restaurantCreated);
+            return okResponse(res, await restaurantService.toDto(restaurantCreated));
         } catch (err) {
             return internalExceptionResponse(res);
         }
@@ -37,8 +41,8 @@ export default {
             const {restaurant, notFoundException} = await restaurantService.findById(id);
             if (notFoundException)
                 return exceptionResponse(res, notFoundException);
-          
-            return okResponse(res, restaurant);
+
+            return okResponse(res, await restaurantService.toDto(restaurant));
         } catch (err) {
             return internalExceptionResponse(res);
         }
@@ -51,7 +55,7 @@ export default {
             if (notFoundException || badParameterException) {
                 if (badParameterException)
                     return exceptionResponse(res, badParameterException);
-              
+
                 return exceptionResponse(res, notFoundException);
             }
 
@@ -62,10 +66,26 @@ export default {
     },
     async findAll(req, res) {
         try {
-            const restaurants = await restaurantService.findAll();
-          
+            const {restaurants} = await restaurantService.findAll();
+
             return okResponse(res, restaurants);
         } catch (err) {
+            return internalExceptionResponse(res);
+        }
+    },
+    async findAllPagination(req, res) {
+        try {
+            const {page, limit} = req.query;
+            const options = {
+                page: parseInt(page, 10) || 1,
+                limit: parseInt(limit, 10) || 10,
+            };
+
+            const {restaurants} = await restaurantService.findAllPagination(options);
+
+            return okResponse(res, restaurants);
+        } catch (err) {
+            console.log(err);
             return internalExceptionResponse(res);
         }
     },

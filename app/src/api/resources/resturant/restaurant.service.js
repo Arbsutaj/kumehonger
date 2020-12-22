@@ -1,8 +1,9 @@
 import Joi from "joi";
 import Restaurant from "./restaurant.model";
 import {NotAuthorizedException} from "../exception/not-authorized-exception";
-import {isValidObjectId, throwNotFoundException} from "../../helpers/utils";
+import {isValidObjectId, throwNotFoundException, toBase64} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
+import menuService from "../menu/menu.service";
 
 function getValidationForRestaurantEntity() {
     const schema = Joi.object().keys({
@@ -14,6 +15,7 @@ function getValidationForRestaurantEntity() {
             .max(5)
             .optional(),
         menus: Joi.array().optional(),
+        logo: Joi.binary().optional()
     });
 
     return {schema};
@@ -75,6 +77,16 @@ async function validateRestaurantEntity(restaurant) {
     return {value};
 }
 
+async function toRestaurantsPagingDto(pagingEntity, restaurants) {
+    return {
+        restaurants: restaurants,
+        page: pagingEntity.page,
+        limit: pagingEntity.limit,
+        total: pagingEntity.total,
+        pages: pagingEntity.pages
+    };
+}
+
 async function toDto(restaurant, attachedPopulation) {
     let restaurantDto = {
         id: restaurant._id,
@@ -82,7 +94,8 @@ async function toDto(restaurant, attachedPopulation) {
         description: restaurant.description,
         rating: restaurant.rating,
         menus: restaurant.menus,
-        owner: restaurant.owner
+        owner: restaurant.owner,
+        logo: toBase64(restaurant.logo)
     };
 
     if (attachedPopulation) {
@@ -92,11 +105,12 @@ async function toDto(restaurant, attachedPopulation) {
             description: restaurant.description,
             rating: restaurant.rating,
             menus: await convertRestaurantMenusImageToBase64(restaurant.menus),
-            owner: restaurant.owner
+            owner: restaurant.owner,
+            logo: toBase64(restaurant.logo)
         };
     }
 
-    return {restaurantDto};
+    return restaurantDto;
 }
 
 function toUpdateEntity(restaurantDtoUpdate) {
@@ -108,8 +122,8 @@ function toUpdateEntity(restaurantDtoUpdate) {
 }
 
 export default {
-    validateRestaurant(body) {
-        const {value, error} = validateRestaurantEntity(body);
+    async validateRestaurant(body) {
+        const {value, error} = await validateRestaurantEntity(body);
         if (error && error.details)
             return {error};
 
@@ -132,7 +146,23 @@ export default {
         return {restaurant};
     },
     async findAll() {
-        return Restaurant.find({});
+        const restaurantsDto = [];
+        const restaurants = await Restaurant.find({});
+        if (restaurants)
+            for (let restaurant of restaurants) {
+                restaurantsDto.push(await toDto(restaurant, false));
+            }
+
+        return {restaurants: restaurantsDto};
+    },
+    async findAllPagination(options) {
+        const restaurantsDto = [];
+        let restaurants = await Restaurant.paginate({}, options);
+        for (let i = 0; i < restaurants.docs.length; i++) {
+            restaurantsDto.push(await toDto(restaurants.docs[i]));
+        }
+
+        return {restaurants: await toRestaurantsPagingDto(restaurants, restaurantsDto)};
     },
     async getRestaurantWithMenus(id) {
         const populateFields = 'menus';
@@ -143,7 +173,7 @@ export default {
         const restaurant = await findByIdWithSpecificPopulateFields(id, populateFields);
 
         if (restaurant) {
-            const {restaurantDto} = await toDto(restaurant, true);
+            const restaurantDto = await toDto(restaurant, true);
             return {restaurant: restaurantDto};
         }
 
@@ -168,9 +198,13 @@ export default {
 
         restaurantFound = value;
         const restaurantUpdated = await Restaurant.findOneAndUpdate({_id: id}, restaurant, {new: true});
-        const {restaurantDto} = await toDto(restaurantUpdated, false);
+        const restaurantDto = await toDto(restaurantUpdated, false);
 
-        return {restaurantDto}
+        return {restaurantDto};
+    },
+    async toDto(entity) {
+        const restaurantDto = await toDto(entity, false);
+
+        return restaurantDto;
     }
-
 }

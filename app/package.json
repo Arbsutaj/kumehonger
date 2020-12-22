@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "joi": "^13.3.0",
     "jsonwebtoken": "^8.2.2",
@@ -26,6 +27,7 @@
     "swagger-ui-express": "^3.0.9"
   },
   "devDependencies": {
+    "axios": "^0.21.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",

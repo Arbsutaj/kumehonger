@@ -1,13 +1,13 @@
 <template>
     <div>
         <vs-navbar shadow square center-collapsed v-model="active">
-            <template #left>
+            <template #left v-if="isLoggedIn">
                 <vs-button @click="activeSidebar = !activeSidebar" flat icon>
                     <box-icon name="menu"></box-icon>
                 </vs-button>
             </template>
-            <template #right v-if="showLoginButton">
-                <vs-button flat v-on:click="navigateToRoute('/login')">Login</vs-button>
+            <template #right v-if="isLoggedIn">
+                <vs-button flat v-on:click="logout()">Logout</vs-button>
             </template>
         </vs-navbar>
         <vs-sidebar
@@ -44,12 +44,14 @@
                         <!--                        <img src="/avatars/avatar-5.png" alt="">-->
                     </vs-avatar>
 
+<!--                    <vs-button size="small">-->
                     <vs-avatar badge-color="danger" badge-position="top-right">
                         <box-icon name="bell" type="solid"></box-icon>
                         <template #badge>
                             28
                         </template>
                     </vs-avatar>
+<!--                    </vs-button>-->
                 </vs-row>
             </template>
         </vs-sidebar>
@@ -67,29 +69,19 @@
         data: () => ({
             notExpand: false,
             reduce: true,
-            colorx: '#F2AB27',
             indexActive: 0,
-            sideBarItems: [],
+            sideBarItems: SideBar,
             active: 'home',
             activeSidebar: false,
-            showLoginButton: true,
         }),
+        computed: {
+            isLoggedIn : function(){ return this.$store.getters.isAuthenticated}
+        },
         methods: {
-            navigateToRoute: function (path) {
-                if (path === '/login')
-                    this.showLoginButton = false;
-                this.$router.push(path);
+            logout: async function () {
+                await this.$store.dispatch('AUTH_LOGOUT');
+                this.$router.push('/login');
             }
-        },
-        created() {
-            this.reduce = true;
-            this.sideBarItems = SideBar;
-            console.log(this.$route);
-            if (this.$route.path.includes('/login')) {
-                this.showLoginButton = false;
-            }
-        },
-        mounted() {
         }
     }
 </script>
