@@ -1,6 +1,5 @@
 import {InternalException} from "../resources/exception/internal-exception";
 import {NotFoundException} from "../resources/exception/not-found-exception";
-import {entityType} from "../resources/resturant/restaurant.service";
 import {NotAuthorizedException} from "../resources/exception/not-authorized-exception";
 
 const ObjectId = require('mongoose').Types.ObjectId;
@@ -19,7 +18,7 @@ export function okResponse(res, jsonObject) {
 }
 
 export function exceptionResponse(res, exception) {
-    return res.status(res.statusCode).json(exception);
+    return res.status(exception.statusCode).json(exception);
 }
 
 export function validationExceptionResponse(res, exception) {
@@ -34,4 +33,12 @@ export function throwNotFoundException(id, entityType) {
 export function throwNotAuthorizedException(message) {
     const notAuthorizedException = new NotAuthorizedException(message);
     return {notAuthorizedException};
+}
+
+export function toBase64(image) {
+    return new Buffer(image).toString('base64');
+}
+
+export function toBinaryData(image) {
+    return new Buffer(image, 'base64');
 }

@@ -1,16 +1,11 @@
-function toBase64(image) {
-    return {
-        data: new Buffer(image.data).toString('base64'),
-        contentType: image.contentType
-    };
-}
+import {toBase64} from "../../helpers/utils";
 
 async function toDto(menuEntity) {
     return {
         restaurant: menuEntity.restaurant,
         description: menuEntity.description,
         servingTime: menuEntity.servingTime,
-        image: toBase64(menuEntity.image)
+        image: {data: toBase64(menuEntity.image.data), contentType: menuEntity.image.contentType}
     }
 }
 export default {

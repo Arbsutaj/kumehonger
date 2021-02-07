@@ -40,6 +40,24 @@ export default {
             return internalExceptionResponse(res);
         }
     },
+    async findByLoggedInUserAndIncludeRestaurants(req, res) {
+        try {
+            const userId = req.user._id;
+            const {page, limit} = req.query;
+            const options = {
+                page: parseInt(page, 10) || 1,
+                limit: parseInt(limit, 10) || 6,
+                populate: 'restaurant'
+            };
+
+            const {usersFavoriteRestaurants} = await favoriteRestaurantService.findByUserIdAndPopulateRestaurants(userId, options);
+
+            return okResponse(res, usersFavoriteRestaurants);
+        } catch (err) {
+            console.log(err);
+            return internalExceptionResponse(res);
+        }
+    },
     async delete(req, res) {
         try {
             const userId = req.user._id;
@@ -55,7 +73,6 @@ export default {
 
             return okResponse(res, success);
         } catch (err) {
-            console.log(err);
             return internalExceptionResponse(res);
         }
     }
