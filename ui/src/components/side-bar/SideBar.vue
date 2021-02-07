@@ -7,6 +7,14 @@
                 </vs-button>
             </template>
             <template #right v-if="isLoggedIn">
+                <Dropdown
+                        :options="options"
+                        v-on:selected="navigateToRestaurantDetails($event.id)"
+                        :disabled="false"
+                        name="zipcode"
+                        :maxItem="10"
+                        placeholder="Search restaurant">
+                </Dropdown>
                 <vs-button flat v-on:click="logout()">Logout</vs-button>
             </template>
         </vs-navbar>
@@ -14,9 +22,10 @@
                 absolute
                 v-model="active"
                 :open.sync="activeSidebar">
-            <vs-sidebar-item v-for="sidebarItem in sideBarItems.items" :key="sidebarItem.index" :id="sidebarItem.id" :to="sidebarItem.route">
+            <vs-sidebar-item v-for="sidebarItem in sideBarItems.items" :key="sidebarItem.index" :id="sidebarItem.id"
+                             :to="sidebarItem.route">
                 <template #icon>
-                    <box-icon :name="sidebarItem.icon"></box-icon>
+                    <box-icon :name="sidebarItem.icon" :type="sidebarItem.iconType"></box-icon>
                 </template>
                 {{sidebarItem.name}}
             </vs-sidebar-item>
@@ -25,14 +34,15 @@
                     <template #header>
                         <vs-sidebar-item arrow>
                             <template #icon>
-                                <box-icon :name="sidebarGroup.icon"></box-icon>
+                                <box-icon :name="sidebarGroup.iconType"></box-icon>
                             </template>
                             {{sidebarGroup.title}}
                         </vs-sidebar-item>
                     </template>
-                    <vs-sidebar-item v-for="sidebarItem in sidebarGroup.items" :key="sidebarItem.index" :to="sidebarItem.route">
+                    <vs-sidebar-item v-for="sidebarItem in sidebarGroup.items" :key="sidebarItem.index"
+                                     :to="sidebarItem.route">
                         <template #icon>
-                            <box-icon :name="sidebarItem.icon"></box-icon>
+                            <box-icon :name="sidebarItem.iconType"></box-icon>
                         </template>
                         {{sidebarItem.name}}
                     </vs-sidebar-item>
@@ -44,14 +54,14 @@
                         <!--                        <img src="/avatars/avatar-5.png" alt="">-->
                     </vs-avatar>
 
-<!--                    <vs-button size="small">-->
+                    <!--                    <vs-button size="small">-->
                     <vs-avatar badge-color="danger" badge-position="top-right">
                         <box-icon name="bell" type="solid"></box-icon>
                         <template #badge>
                             28
                         </template>
                     </vs-avatar>
-<!--                    </vs-button>-->
+                    <!--                    </vs-button>-->
                 </vs-row>
             </template>
         </vs-sidebar>
@@ -61,11 +71,15 @@
 
 <script>
 
-    import {SideBar} from "./SideBarItems";
     import 'boxicons';
+    import {SideBar} from "./SideBarItems";
+    import Dropdown from 'vue-simple-search-dropdown';
 
     export default {
         name: 'SideBar',
+        components: {
+            Dropdown
+        },
         data: () => ({
             notExpand: false,
             reduce: true,
@@ -73,14 +87,22 @@
             sideBarItems: SideBar,
             active: 'home',
             activeSidebar: false,
+            options: [{name: 'Arb', id: '5fdd30908d71c42a5c9332b6'}, {name: 'Arbs', id: '123'}, {name: 'arb sutaj', id: '1234'}],
         }),
         computed: {
-            isLoggedIn : function(){ return this.$store.getters.isAuthenticated}
+            isLoggedIn: function () {
+                return this.$store.getters.isAuthenticated
+            }
         },
         methods: {
             logout: async function () {
                 await this.$store.dispatch('AUTH_LOGOUT');
                 this.$router.push('/login');
+            },
+            navigateToRestaurantDetails: async function(restaurantId) {
+
+                if (restaurantId !== undefined)
+                    this.$router.push({path: `/restaurant-details/${restaurantId}`});
             }
         }
     }

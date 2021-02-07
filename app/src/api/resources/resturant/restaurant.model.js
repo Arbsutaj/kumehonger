@@ -11,11 +11,16 @@ const restaurantSchema = new Schema({
         type: String,
         required: [true, 'Restaurant must have description'],
     },
-    rating: {
+    likes: {
         type: Number,
-        default: 0,
-        min: 0,
-        max: 5,
+        default: 0
+    },
+    opensAt: {
+        type: String,
+        required: true
+    },
+    closesAt: {
+        type: String,
         required: true
     },
     menus: [{
@@ -31,6 +36,15 @@ const restaurantSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
+    },
+    location: {
+        type: {
+            type: String,
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number]
+        }
     },
 });
 restaurantSchema.plugin(mongoosePaginate);

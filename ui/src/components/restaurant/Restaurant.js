@@ -4,8 +4,10 @@ export default class Restaurant {
     location = '';
     owner = '';
     description = '';
-    menus = '';
+    menus = [];
     logo = '';
+    opensAt = '';
+    closesAt = '';
 
     constructor() {}
 }

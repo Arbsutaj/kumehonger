@@ -4,7 +4,7 @@ import {
     exceptionResponse,
     internalExceptionResponse,
     isValidObjectId,
-    okResponse,
+    okResponse, throwNotFoundException,
     toBinaryData,
     validationExceptionResponse
 } from "../../helpers/utils";
@@ -26,6 +26,7 @@ export default {
 
             return okResponse(res, await restaurantService.toDto(restaurantCreated));
         } catch (err) {
+            console.log(err);
             return internalExceptionResponse(res);
         }
     },
@@ -85,7 +86,6 @@ export default {
 
             return okResponse(res, restaurants);
         } catch (err) {
-            console.log(err);
             return internalExceptionResponse(res);
         }
     },
@@ -109,5 +109,42 @@ export default {
         } catch (err) {
             return internalExceptionResponse(res);
         }
+    },
+    async findNearByRestaurants(req, res) {
+        try {
+            let lat = req.body.lat;
+            let lang = req.body.lng;
+            let restaurants = await Restaurant.find({
+                location: {
+                    $near: {
+                        $maxDistance: 4,
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [lat, lang]
+                        }
+                    }
+                }
+            });
+
+            return okResponse(res, restaurants);
+        } catch (err) {
+            return internalExceptionResponse(res)
+        }
+    },
+    async likeRestaurant(req, res) {
+       try {
+           let {userLikeRestaurant} = {restaurant: req.body.restaurant};
+           userLikeRestaurant = Object.assign({}, userLikeRestaurant, {
+               user: req.user._id,
+           });
+
+           const {userLikeRestaurantInDb, notFoundException} = await restaurantService.likeRestaurant(userLikeRestaurant);
+           if (notFoundException)
+               return exceptionResponse(res, notFoundException);
+
+           return okResponse(res, userLikeRestaurantInDb);
+       } catch (err) {
+           return internalExceptionResponse(res);
+       }
     }
 }

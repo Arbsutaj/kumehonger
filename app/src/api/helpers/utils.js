@@ -1,6 +1,5 @@
 import {InternalException} from "../resources/exception/internal-exception";
 import {NotFoundException} from "../resources/exception/not-found-exception";
-import {entityType} from "../resources/resturant/restaurant.service";
 import {NotAuthorizedException} from "../resources/exception/not-authorized-exception";
 
 const ObjectId = require('mongoose').Types.ObjectId;

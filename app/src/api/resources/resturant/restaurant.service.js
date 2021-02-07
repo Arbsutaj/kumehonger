@@ -1,9 +1,10 @@
 import Joi from "joi";
 import Restaurant from "./restaurant.model";
 import {NotAuthorizedException} from "../exception/not-authorized-exception";
-import {isValidObjectId, throwNotFoundException, toBase64} from "../../helpers/utils";
+import {isValidObjectId, throwNotFoundException, toBase64, toBinaryData} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 import menuService from "../menu/menu.service";
+import UserLikeRestaurant from "./user.like.restaurant.model";
 
 function getValidationForRestaurantEntity() {
     const schema = Joi.object().keys({
@@ -15,7 +16,10 @@ function getValidationForRestaurantEntity() {
             .max(5)
             .optional(),
         menus: Joi.array().optional(),
-        logo: Joi.binary().optional()
+        logo: Joi.binary().optional(),
+        location: Joi.object().optional(),
+        opensAt: Joi.string().required(),
+        closesAt: Joi.string().required()
     });
 
     return {schema};
@@ -95,7 +99,10 @@ async function toDto(restaurant, attachedPopulation) {
         rating: restaurant.rating,
         menus: restaurant.menus,
         owner: restaurant.owner,
-        logo: toBase64(restaurant.logo)
+        logo: toBase64(restaurant.logo),
+        location: restaurant.location,
+        closesAt: restaurant.closesAt,
+        opensAt: restaurant.opensAt
     };
 
     if (attachedPopulation) {
@@ -106,7 +113,10 @@ async function toDto(restaurant, attachedPopulation) {
             rating: restaurant.rating,
             menus: await convertRestaurantMenusImageToBase64(restaurant.menus),
             owner: restaurant.owner,
-            logo: toBase64(restaurant.logo)
+            logo: toBase64(restaurant.logo),
+            location: restaurant.location,
+            closesAt: restaurant.closesAt,
+            opensAt: restaurant.opensAt
         };
     }
 
@@ -117,7 +127,11 @@ function toUpdateEntity(restaurantDtoUpdate) {
     return {
         name: restaurantDtoUpdate.name,
         description: restaurantDtoUpdate.description,
-        rating: restaurantDtoUpdate.rating === 0 ? 0 : restaurantDtoUpdate.rating
+        rating: restaurantDtoUpdate.rating === 0 ? 0 : restaurantDtoUpdate.rating,
+        opensAt: restaurantDtoUpdate.opensAt,
+        closesAt: restaurantDtoUpdate.closesAt,
+        logo: toBinaryData(restaurantDtoUpdate.logo),
+        location: restaurantDtoUpdate.location
     };
 }
 
@@ -201,6 +215,19 @@ export default {
         const restaurantDto = await toDto(restaurantUpdated, false);
 
         return {restaurantDto};
+    },
+    async likeRestaurant(userLikeRestaurant) {
+        const restaurantId = userLikeRestaurant.restaurant;
+
+        const {restaurant, notFoundException} = await findById(restaurantId);
+        if (notFoundException)
+            return {notFoundException}
+
+        restaurant.likes = restaurant.likes + 1;
+        await Restaurant.findOneAndUpdate({_id: restaurantId}, restaurant, {new: true});
+        const userLikeRestaurantInDb = await UserLikeRestaurant.create(userLikeRestaurant);
+
+        return {userLikeRestaurantInDb};
     },
     async toDto(entity) {
         const restaurantDto = await toDto(entity, false);

@@ -13,5 +13,8 @@ favoriteRestaurantRouter
     .route('/logged-in-user')
     .get(authentication.isAuthenticated(), favoriteRestaurantController.findByLoggedInUser);
 favoriteRestaurantRouter
+    .route('/with-restaurant/logged-in')
+    .get(authentication.isAuthenticated(), favoriteRestaurantController.findByLoggedInUserAndIncludeRestaurants);
+favoriteRestaurantRouter
     .route('/:id')
     .delete(authentication.isAuthenticated(), favoriteRestaurantController.delete);

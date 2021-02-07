@@ -14,3 +14,5 @@ restaurantRouter
 restaurantRouter
     .get('/:id/with-menu', authentication.isAuthenticated(), restaurantController.findByIdAndRetrieveMenus)
     .get('/paginated', authentication.isAuthenticated(), restaurantController.findAllPagination);
+restaurantRouter
+    .post('/find-nearby-restaurants', authentication.isAuthenticated(), restaurantController.findNearByRestaurants);
