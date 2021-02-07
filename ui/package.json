@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "kumehonger",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,10 @@
     "vue-axios": "^2.1.5",
     "vue-mc": "^0.6.0",
     "vue-router": "^3.4.3",
-    "vuesax": "^4.0.1-alpha.24"
+    "vue-sliding-pagination": "^1.1.2",
+    "vuesax": "^4.0.1-alpha.24",
+    "vuex": "^3.6.0",
+    "vuex-persistedstate": "^4.0.0-beta.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

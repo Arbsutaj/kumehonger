@@ -6,11 +6,13 @@ import {connect} from './config/db';
 import {restRouter} from './api';
 import swaggerDocument from './config/swagger.json';
 import {configJWTStrategy} from './api/middlewares/passport-jwt';
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 connect();
+app.use(cors());
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({extended: true, limit: '50mb'}));
 if (process.env.NODE_ENV === 'development') {

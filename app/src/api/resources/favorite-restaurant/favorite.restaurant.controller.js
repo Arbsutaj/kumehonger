@@ -55,7 +55,6 @@ export default {
 
             return okResponse(res, success);
         } catch (err) {
-            console.log(err);
             return internalExceptionResponse(res);
         }
     }
