@@ -144,7 +144,7 @@ export default {
         return {user};
     },
     async toDto(entity) {
-        const {userDto} = toDto(entity);
+        const {userDto} = await toDto(entity);
 
         return {userDto};
     },

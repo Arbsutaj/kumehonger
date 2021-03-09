@@ -8,6 +8,8 @@ export default class Restaurant {
     logo = '';
     opensAt = '';
     closesAt = '';
+    numberOfComments = '';
+    likes = '';
 
     constructor() {}
 }

@@ -1,8 +1,11 @@
 import userService from './user.service';
 import User from './user.model';
 import {
-    exceptionResponse, internalExceptionResponse,
-    isValidObjectId, okResponse, validationExceptionResponse,
+    exceptionResponse,
+    internalExceptionResponse,
+    isValidObjectId,
+    okResponse,
+    validationExceptionResponse,
 } from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
@@ -78,7 +81,11 @@ export default {
         try {
             const {id} = req.params;
 
-            const {deactivatedUserDto, notAuthorizedException, notFoundException} = await userService.deactivateUser(id, req.user, req.body);
+            const {
+                deactivatedUserDto,
+                notAuthorizedException,
+                notFoundException
+            } = await userService.deactivateUser(id, req.user, req.body);
             if (notFoundException || notAuthorizedException) {
                 if (notFoundException)
                     return exceptionResponse(res, notFoundException);

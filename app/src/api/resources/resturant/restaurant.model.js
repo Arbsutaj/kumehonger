@@ -46,6 +46,10 @@ const restaurantSchema = new Schema({
             type: [Number]
         }
     },
+    numberOfComments: {
+        type: Number,
+        default: 0
+    }
 });
 restaurantSchema.plugin(mongoosePaginate);
 export default mongoose.model('Restaurant', restaurantSchema);

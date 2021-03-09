@@ -10,4 +10,5 @@ userRouter
     .get(isAdmin, userController.findById)
     .put(authentication.isAuthenticated(), userController.update)
     .delete(authentication.isAuthenticated(), userController.deactivateUser);
-userRouter.get('/', isAdmin, userController.findAll);
+userRouter
+    .get('/', isAdmin, userController.findAll);
