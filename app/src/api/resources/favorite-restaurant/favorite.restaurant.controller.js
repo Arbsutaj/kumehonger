@@ -54,7 +54,6 @@ export default {
 
             return okResponse(res, usersFavoriteRestaurants);
         } catch (err) {
-            console.log(err);
             return internalExceptionResponse(res);
         }
     },

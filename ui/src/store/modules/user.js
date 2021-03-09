@@ -1,11 +1,15 @@
 import axios from "axios";
 
 const state = {
-    usersFavoriteRestaurants: []
+    usersFavoriteRestaurants: [],
+    user: null,
+    usersLikedRestaurants: []
 };
 
 const getters = {
     getUsersFavoriteRestaurants: state => state.usersFavoriteRestaurants,
+    getUserLoggedIn: state => state.user,
+    getUsersLikedRestaurants: state => state.usersLikedRestaurants
 };
 
 const actions = {
@@ -21,14 +25,42 @@ const actions = {
                 })
         })
     },
-
+    getUserLoggedIn: async ({commit}) => {
+        return new Promise((resolve, reject) => {
+            axios({url: '/auth/me', method: 'GET'})
+                .then(response => {
+                    commit('setUserLoggedIn', response.data);
+                    resolve(response);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        })
+    },
+    getUsersLikedRestaurants: async ({commit}) => {
+        return new Promise((resolve, reject) => {
+            axios({url: '/restaurant/my-liked-restaurants', method: 'GET'})
+                .then(response => {
+                    commit('setUsersLikedRestaurants', response.data);
+                    resolve(response);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        })
+    }
 };
 
 const mutations = {
     setUsersFavoriteRestaurants: (state, usersFavoriteRestaurants) => {
         state.usersFavoriteRestaurants = usersFavoriteRestaurants;
+    },
+    setUserLoggedIn: (state, user) => {
+        state.user = user;
+    },
+    setUsersLikedRestaurants: (state, usersLikedRestaurants) => {
+        state.usersLikedRestaurants = usersLikedRestaurants;
     }
-
 };
 
 export default {
