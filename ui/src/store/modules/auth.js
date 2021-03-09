@@ -2,15 +2,14 @@ import axios from 'axios';
 
 const state = {
     status: '',
-    token: localStorage.getItem('token') || '',
-    user: null
+    token: localStorage.getItem('token') || ''
 };
 const getters = {
     isAuthenticated: state => !!state.token
 };
 
 const actions = {
-    AUTH_LOGIN: async ({commit}, user) => {
+    AUTH_LOGIN: async ({dispatch, commit}, user) => {
         return new Promise((resolve, reject) => { // The Promise used for router redirect in login
             commit('AUTH_REQUEST');
             axios({url: '/auth/login', data: user, method: 'POST'})
@@ -19,6 +18,7 @@ const actions = {
                     localStorage.setItem('token', token)
                     axios.defaults.headers.common['Authorization'] = token; // store the token in localstorage
                     commit('AUTH_SUCCESS', token);
+                    dispatch('getUserLoggedIn');
                     resolve(resp);
                 })
                 .catch(err => {
@@ -37,18 +37,7 @@ const actions = {
             resolve();
         })
     },
-    getUserLoggedIn: async ({commit}) => {
-        return new Promise((resolve, reject) => {
-            axios({url: '/auth/me', method: 'GET'})
-                .then(response => {
-                    commit('setUserLoggedIn', response.data);
-                    resolve(response);
-                })
-                .catch(err => {
-                    reject(err);
-                })
-        })
-    }
+
 };
 
 const mutations = {
@@ -65,9 +54,6 @@ const mutations = {
     AUTH_LOGOUT: (state) => {
         state.status = null;
         state.token = '';
-    },
-    setUserLoggedIn: (state, user) => {
-        state.user = user;
     }
 };
 

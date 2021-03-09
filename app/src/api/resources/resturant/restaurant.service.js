@@ -1,7 +1,13 @@
 import Joi from "joi";
 import Restaurant from "./restaurant.model";
 import {NotAuthorizedException} from "../exception/not-authorized-exception";
-import {isValidObjectId, throwNotFoundException, toBase64, toBinaryData} from "../../helpers/utils";
+import {
+    isValidObjectId,
+    throwNotAuthorizedException,
+    throwNotFoundException,
+    toBase64,
+    toBinaryData
+} from "../../helpers/utils";
 import {BadParameterException} from "../exception/bad-parameter-exception";
 import menuService from "../menu/menu.service";
 import UserLikeRestaurant from "./user.like.restaurant.model";
@@ -44,9 +50,7 @@ async function findById(id) {
 }
 
 async function findByIdWithSpecificPopulateFields(id, populateFields) {
-    const restaurant = await Restaurant.findById({_id: id}).populate(populateFields);
-
-    return restaurant;
+    return await Restaurant.findById({_id: id}).populate(populateFields);
 }
 
 async function checkIfIsOwnerOfRestaurant(userId, restaurantId) {
@@ -102,7 +106,9 @@ async function toDto(restaurant, attachedPopulation) {
         logo: toBase64(restaurant.logo),
         location: restaurant.location,
         closesAt: restaurant.closesAt,
-        opensAt: restaurant.opensAt
+        opensAt: restaurant.opensAt,
+        likes: restaurant.likes,
+        numberOfComments: restaurant.numberOfComments
     };
 
     if (attachedPopulation) {
@@ -116,7 +122,9 @@ async function toDto(restaurant, attachedPopulation) {
             logo: toBase64(restaurant.logo),
             location: restaurant.location,
             closesAt: restaurant.closesAt,
-            opensAt: restaurant.opensAt
+            opensAt: restaurant.opensAt,
+            likes: restaurant.likes,
+            numberOfComments: restaurant.numberOfComments
         };
     }
 
@@ -221,17 +229,35 @@ export default {
 
         const {restaurant, notFoundException} = await findById(restaurantId);
         if (notFoundException)
-            return {notFoundException}
+            return {notFoundException};
 
-        restaurant.likes = restaurant.likes + 1;
-        await Restaurant.findOneAndUpdate({_id: restaurantId}, restaurant, {new: true});
-        const userLikeRestaurantInDb = await UserLikeRestaurant.create(userLikeRestaurant);
+        let userLikeRestaurantInDb = await UserLikeRestaurant.find({restaurant: restaurantId, user: userLikeRestaurant.user});
+        if (userLikeRestaurantInDb.length === 0) {
+            restaurant.likes = restaurant.likes + 1;
+            await Restaurant.findOneAndUpdate({_id: restaurantId}, restaurant, {new: true});
+            userLikeRestaurantInDb = await UserLikeRestaurant.create(userLikeRestaurant);
+        }
 
         return {userLikeRestaurantInDb};
     },
-    async toDto(entity) {
-        const restaurantDto = await toDto(entity, false);
+    async removeLike(id, userId) {
+        const userLikeRestaurantInDb = await UserLikeRestaurant.findById(id);
+        if (!userLikeRestaurantInDb)
+            return throwNotFoundException(id, 'Like');
 
-        return restaurantDto;
+        if (!userId.equals(userLikeRestaurantInDb.user))
+            return throwNotAuthorizedException('User cannot remove other\'s like');
+
+        await UserLikeRestaurant.deleteOne({_id: id});
+        const {restaurant} = await findById(userLikeRestaurantInDb.restaurant);
+        restaurant.likes = restaurant.likes - 1;
+        await Restaurant.findOneAndUpdate({_id: restaurant._id}, restaurant, {new: true});
+        return {success: {success:true}};
+    },
+    async findLikesOfUser(userId) {
+        return await UserLikeRestaurant.find({user: userId});
+    },
+    async toDto(entity) {
+        return await toDto(entity, false);
     }
 }

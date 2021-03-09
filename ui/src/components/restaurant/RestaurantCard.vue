@@ -12,9 +12,20 @@
       </p>
     </template>
     <template #interactions>
-      <vs-tooltip>
-        <vs-button danger icon>
-          <box-icon name="heart"></box-icon>
+      <vs-tooltip top v-if="isLikedByUser(restaurant.id)">
+        <vs-button danger icon
+                   v-on:click="removeLikeFromRestaurant(restaurant.id)">
+          <box-icon type="solid" name="heart"></box-icon>
+
+        </vs-button>
+        <template #tooltip>
+          Unlike
+        </template>
+      </vs-tooltip>
+      <vs-tooltip v-else>
+        <vs-button danger icon
+                   v-on:click="likeRestaurant(restaurant.id)">
+          <box-icon name="heart" type="regular"></box-icon>
         </vs-button>
         <template #tooltip>
           Like Restaurant
@@ -60,6 +71,10 @@ export default {
     usersFavoriteRestaurants: {
       type: Array,
       default: () => []
+    },
+    usersLikedRestaurants: {
+      type: Array,
+      default: () => []
     }
   },
   methods: {
@@ -67,7 +82,7 @@ export default {
       await new Promise(function (resolve) {
         setTimeout(resolve, 100);
       });
-      this.$router.push({path: `/restaurant-details/${restaurantId}`});
+      await this.$router.push({path: `/restaurant-details/${restaurantId}`});
     },
     addFavoriteRestaurant: async function (restaurantId) {
       const favoriteRestaurant = {restaurant: restaurantId};
@@ -96,6 +111,31 @@ export default {
     },
     isUsersFavorite: function (restaurantId) {
       return this.usersFavoriteRestaurants.find(favorite => favorite.restaurant === restaurantId);
+    },
+    likeRestaurant: async function (restaurantId) {
+      const userLikeRestaurant = {restaurant: restaurantId};
+
+      await this.axios.post('/restaurant/like', userLikeRestaurant)
+          .then((res) => {
+            const userLikeRestaurant = res.data;
+            this.usersLikedRestaurants.push(userLikeRestaurant);
+            this.$store.commit('setUsersLikedRestaurants', this.usersLikedRestaurants);
+          }).catch(() => {
+          });
+    },
+    removeLikeFromRestaurant: async function (restaurantId) {
+      const userLikeRestaurantId = this.usersLikedRestaurants.find(like => like.restaurant === restaurantId)._id;
+
+      await this.axios.delete(`restaurant/remove-like/${userLikeRestaurantId}`)
+          .then(() => {
+            const index = this.usersLikedRestaurants.findIndex(like => like.restaurant === restaurantId);
+            this.usersLikedRestaurants.splice(index, 1);
+            this.$store.commit('setUsersLikedRestaurants', this.usersLikedRestaurants);
+          }).catch(() => {
+          });
+    },
+    isLikedByUser: function (restaurantId) {
+      return this.usersLikedRestaurants.find(like => like.restaurant === restaurantId);
     }
   },
   created() {

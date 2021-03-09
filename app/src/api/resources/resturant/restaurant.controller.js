@@ -4,7 +4,7 @@ import {
     exceptionResponse,
     internalExceptionResponse,
     isValidObjectId,
-    okResponse, throwNotFoundException,
+    okResponse,
     toBinaryData,
     validationExceptionResponse
 } from "../../helpers/utils";
@@ -133,10 +133,9 @@ export default {
     },
     async likeRestaurant(req, res) {
        try {
-           let {userLikeRestaurant} = {restaurant: req.body.restaurant};
-           userLikeRestaurant = Object.assign({}, userLikeRestaurant, {
-               user: req.user._id,
-           });
+           let userLikeRestaurant = {restaurant: req.body.restaurant};
+
+           userLikeRestaurant = Object.assign({}, userLikeRestaurant, {user: req.user._id});
 
            const {userLikeRestaurantInDb, notFoundException} = await restaurantService.likeRestaurant(userLikeRestaurant);
            if (notFoundException)
@@ -146,5 +145,34 @@ export default {
        } catch (err) {
            return internalExceptionResponse(res);
        }
-    }
+    },
+    async removeLikeFromRestaurant(req, res) {
+        try {
+            const {id} = req.params;
+            const userId = req.user._id;
+
+            const {success, notFoundException, notAuthorizedException} = await restaurantService.removeLike(id, userId);
+            if (notFoundException || notAuthorizedException ) {
+                if (notFoundException)
+                    return exceptionResponse(res, notFoundException);
+
+                if (notAuthorizedException)
+                    return exceptionResponse(res, notAuthorizedException);
+            }
+
+            return okResponse(res, success);
+        } catch (err) {
+            return internalExceptionResponse(res);
+        }
+    },
+    async findLikesOfLoggedInUser(req, res) {
+        try {
+            const userId = req.user._id;
+            const restaurantsLikedByUser = await restaurantService.findLikesOfUser(userId);
+
+            return okResponse(res, restaurantsLikedByUser);
+        } catch (err) {
+            return internalExceptionResponse(res);
+        }
+    },
 }

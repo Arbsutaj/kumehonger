@@ -14,6 +14,7 @@ import VueAxios from 'vue-axios';
 import store from './store';
 import Dropdown from 'vue-simple-search-dropdown';
 import VueGeolocation from 'vue-browser-geolocation';
+import moment from 'moment';
 
 Vue.config.productionTip = false;
 Vue.use(BootstrapVue, IconsPlugin, BootstrapVueIcons);
@@ -22,6 +23,12 @@ Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(Dropdown);
 Vue.use(VueGeolocation);
+
+Vue.filter('formatDate', function(value) {
+    if (value) {
+        return moment(String(value)).format('MM/DD/YYYY hh:mm')
+    }
+});
 
 axios.defaults.baseURL = 'http://localhost:3000/api';
 const token = localStorage.getItem('token');
