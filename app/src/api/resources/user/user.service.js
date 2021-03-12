@@ -171,13 +171,13 @@ export default {
 
         return {users};
     },
-    async update(user, id, userRequest) {
-        if (!user._id.equals(id)) {
+    async update(userId, id, userRequest) {
+        if (!userId.equals(id)) {
             const notAuthorizedException = new NotAuthorizedException('You cannot update another user!');
             return {notAuthorizedException};
         }
 
-        const userToUpdate = await toUpdateEntity(userRequest, user);
+        const userToUpdate = await toUpdateEntity(userRequest);
         const {value, error} = await validateUpdateEntity(userToUpdate);
         if (error)
             return {error};

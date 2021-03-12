@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 
-const { Schema } = mongoose;
+const {Schema} = mongoose;
 const restaurantSchema = new Schema({
     name: {
         type: String,
@@ -49,6 +49,15 @@ const restaurantSchema = new Schema({
     numberOfComments: {
         type: Number,
         default: 0
+    },
+    street: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    createdAt: {
+        type: Date
     }
 });
 restaurantSchema.plugin(mongoosePaginate);

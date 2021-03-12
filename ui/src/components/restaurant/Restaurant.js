@@ -10,6 +10,10 @@ export default class Restaurant {
     closesAt = '';
     numberOfComments = '';
     likes = '';
+    street = '';
+    city = '';
+    address = '';
+    createdAt = '';
 
     constructor() {}
 }

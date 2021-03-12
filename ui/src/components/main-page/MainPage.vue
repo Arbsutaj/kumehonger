@@ -51,7 +51,7 @@
           </div>
         </div>
       </b-tab>
-      <div class="d-flex flex-row-reverse bd-highlight">
+      <div class="d-flex flex-row-reverse bd-highlight mt-2">
         <sliding-pagination
             :current="currentPage"
             :total="totalPages"
@@ -156,8 +156,10 @@ export default {
   },
   async created() {
     await this.loadRestaurants();
-    await this.getUsersFavoriteRestaurant();
-    await this.getUserRestaurantsLiked();
+    if (this.$store.getters.isAuthenticated) {
+      await this.getUsersFavoriteRestaurant();
+      await this.getUserRestaurantsLiked();
+    }
   }
 }
 </script>

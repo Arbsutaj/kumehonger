@@ -9,11 +9,12 @@ restaurantRouter
     .get(authentication.isAuthenticated(), restaurantController.findAll);
 restaurantRouter
     .route('/by-id/:id')
-    .get(authentication.isAuthenticated(), restaurantController.findById)
+    .get(restaurantController.findById)
     .put(authentication.isAuthenticated(), restaurantController.update);
 restaurantRouter
-    .get('/:id/with-menu', authentication.isAuthenticated(), restaurantController.findByIdAndRetrieveMenus)
-    .get('/paginated', authentication.isAuthenticated(), restaurantController.findAllPagination);
+    .get('/:id/with-menu', restaurantController.findByIdAndRetrieveMenus)
+    .get('/paginated', restaurantController.findAllPagination)
+    .get('/by-name', authentication.isAuthenticated(), restaurantController.findRestaurantByName);
 restaurantRouter
     .post('/find-nearby-restaurants', authentication.isAuthenticated(), restaurantController.findNearByRestaurants);
 restaurantRouter

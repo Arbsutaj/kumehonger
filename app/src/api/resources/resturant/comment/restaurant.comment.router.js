@@ -14,4 +14,4 @@ restaurantCommentRouter
 restaurantCommentRouter
     .post('/add', authentication.isAuthenticated(), restaurantCommentController.addComment);
 restaurantCommentRouter
-    .get('/by-restaurant-paginated/:id', authentication.isAuthenticated(), restaurantCommentController.findCommentsByRestaurantIdPaginated);
+    .get('/by-restaurant-paginated/:id', restaurantCommentController.findCommentsByRestaurantIdPaginated);

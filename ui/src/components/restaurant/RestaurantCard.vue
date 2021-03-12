@@ -9,6 +9,8 @@
     <template #text>
       <p>
         {{ restaurant.description }}
+        <br>
+        {{restaurant.city + ', ' + restaurant.street}}
       </p>
     </template>
     <template #interactions>
@@ -80,7 +82,7 @@ export default {
   methods: {
     restaurantDetails: async function (event, restaurantId) {
       await new Promise(function (resolve) {
-        setTimeout(resolve, 100);
+        setTimeout(resolve, 1000);
       });
       await this.$router.push({path: `/restaurant-details/${restaurantId}`});
     },

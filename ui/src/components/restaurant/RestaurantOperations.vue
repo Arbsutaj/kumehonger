@@ -85,6 +85,25 @@
             </vs-input>
           </div>
         </div>
+        <div class="row">
+          <div class="mt-4 col">
+            <vs-input label-placeholder="City" v-model="restaurant.city">
+              <template v-if="restaurant.city === ''" #message-danger>
+                City required!
+              </template>
+            </vs-input>
+          </div>
+          <div class="mt-4 col">
+            <vs-input label-placeholder="Street" v-model="restaurant.street">
+              <template v-if="restaurant.street === ''" #message-danger>
+                Street is required!
+              </template>
+            </vs-input>
+          </div>
+        </div>
+        <div class="d-flex justify-content-start">
+
+        </div>
         <div v-if="userCurrentGeoLocation.lat">
           <p>Click on the map to add restaurant location!</p>
           <HereMap :center="userCurrentGeoLocation" :throwEvent="true"
@@ -112,8 +131,6 @@
             Restaurant location
           </h4>
         </template>
-
-
         <div class="con-content">
           <p>
             Is this the correct restaurant location?
@@ -184,6 +201,7 @@ export default {
     },
     saveRestaurant: function () {
       if (this.restaurant.id) {
+        console.log(this.restaurant);
         return this.axios.put(`/restaurant/by-id/${this.restaurant.id}`, this.restaurant)
             .then((response) => {
               this.restaurant = response.data;
@@ -198,6 +216,7 @@ export default {
               console.log(error.response);
             });
       }
+      this.restaurant.createdAt = new Date();
       this.axios.post('/restaurant/', this.restaurant)
           .then((response) => {
             this.restaurant = response.data;
