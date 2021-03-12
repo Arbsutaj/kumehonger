@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-tabs content-class="mt-3" justified class="restaurant-details">
-      <b-tab title="Details" active>
+      <b-tab title="Details" :active="detailsPage">
         <b-card>
           <b-card-group deck>
             <b-card
@@ -15,6 +15,8 @@
                 v-if="restaurant.logo">
               <b-card-text>
                 {{ restaurant.description }}
+                <br>
+                {{restaurant.city + ', ' + restaurant.street}}
               </b-card-text>
               <template v-slot:footer>
                 <vs-row vs-justify="flex-start">
@@ -43,7 +45,7 @@
                     <box-icon name="chat"></box-icon>
                     <span class="span">{{ restaurant.numberOfComments }}</span>
                   </vs-button>
-                  <vs-button shadow :to="'/edit-restaurant/'+restaurant.id">
+                  <vs-button shadow :to="'/edit-restaurant/'+restaurant.id" v-if="isAuthenticated">
                     <box-icon name="edit"></box-icon>
                   </vs-button>
                 </vs-row>
@@ -109,7 +111,7 @@
           </b-card-group>
         </b-card>
       </b-tab>
-      <b-tab title="Menus" v-on:click="loadRestaurantMenus()" lazy>
+      <b-tab title="Menus" :active="menuPage" v-on:click="loadRestaurantMenus()" lazy>
         <div class="d-flex flex-wrap justify-content-center">
           <vs-card type="5" class="mt-3 ml-2" v-for="(menu, i) in restaurantMenus" :key="i">
             <template #img>
@@ -129,6 +131,15 @@
               </vs-button>
             </template>
           </vs-card>
+          <div class="col-lg-6 menu-item filter-starters">
+            <img src="assets/img/menu/lobster-bisque.jpg" class="menu-img" alt="">
+            <div class="menu-content">
+              <a href="#">Lobster Bisque</a><span>$5.95</span>
+            </div>
+            <div class="menu-ingredients">
+              Lorem, deren, trataro, filede, nerada
+            </div>
+          </div>
         </div>
       </b-tab>
       <b-tab title="Rating" lazy><p>I'm the tab with the very, very long title</p></b-tab>
@@ -185,10 +196,13 @@ export default {
     pageLimit: 4,
     openDialog: false,
     restaurantComment: new RestaurantComment(),
-    usersLikedRestaurants: []
+    usersLikedRestaurants: [],
+    detailsPage: true,
+    menuPage: false
   }),
   methods: {
     getRestaurantDetails: async function (restaurantId) {
+      this.mapStateOfPages(true, false);
       await this.axios.get(`/restaurant/by-id/${restaurantId}`).then(res => {
         this.restaurant = res.data;
       }).catch(() => {
@@ -228,7 +242,12 @@ export default {
     isUsersFavorite: function (restaurantId) {
       return this.usersFavoriteRestaurants.find(favorite => favorite.restaurant === restaurantId);
     },
+    mapStateOfPages: function(detailsPage, menuPage) {
+      this.detailsPage =detailsPage;
+      this.menuPage = menuPage;
+    },
     loadRestaurantMenus: async function () {
+      this.mapStateOfPages(false, true);
       await this.axios.get(`/restaurant/${this.restaurant.id}/with-menu`)
           .then((response) => {
             this.restaurantMenus = response.data.menus;
@@ -326,12 +345,16 @@ export default {
     },
     isLikedByUser: function (restaurantId) {
       return this.usersLikedRestaurants.find(like => like.restaurant === restaurantId);
+    },
+    isAuthenticated: function () {
+      return this.$store.getters.isAuthenticated;
     }
   },
   async created() {
     const id = this.$route.params.id;
     await this.getRestaurantDetails(id);
     await this.getUsersFavoriteRestaurant();
+    await this.getUsersLikedRestaurants();
     await this.loadRestaurantComments(id, this.currentPage)
   },
   watch: {

@@ -20,7 +20,8 @@ export default {
 
             const restaurantToCreate = Object.assign({}, value, {
                 owner: req.user._id,
-                logo: toBinaryData(req.body.logo)
+                logo: toBinaryData(req.body.logo),
+                createdAt: Date.now()
             });
             const restaurantCreated = await Restaurant.create(restaurantToCreate);
 
@@ -80,6 +81,9 @@ export default {
             const options = {
                 page: parseInt(page, 10) || 1,
                 limit: parseInt(limit, 10) || 10,
+                sort: {
+                    createdAt: -1
+                }
             };
 
             const {restaurants} = await restaurantService.findAllPagination(options);
@@ -175,4 +179,14 @@ export default {
             return internalExceptionResponse(res);
         }
     },
+    async findRestaurantByName(req, res) {
+        try {
+            const name = req.query.name;
+            const {restaurants} = await restaurantService.findRestaurantsByName(name);
+
+            return okResponse(res, restaurants);
+        } catch (err) {
+            return internalExceptionResponse(res);
+        }
+    }
 }

@@ -1,15 +1,18 @@
 import axios from "axios";
+import {UserProfile} from "@/components/user/profile/user.profile";
 
 const state = {
     usersFavoriteRestaurants: [],
     user: null,
-    usersLikedRestaurants: []
+    usersLikedRestaurants: [],
+    userProfile: new UserProfile()
 };
 
 const getters = {
     getUsersFavoriteRestaurants: state => state.usersFavoriteRestaurants,
     getUserLoggedIn: state => state.user,
-    getUsersLikedRestaurants: state => state.usersLikedRestaurants
+    getUsersLikedRestaurants: state => state.usersLikedRestaurants,
+    getLoggedInUserProfile: state => state.userProfile
 };
 
 const actions = {
@@ -25,11 +28,12 @@ const actions = {
                 })
         })
     },
-    getUserLoggedIn: async ({commit}) => {
+    getUserLoggedIn: async ({dispatch, commit}) => {
         return new Promise((resolve, reject) => {
             axios({url: '/auth/me', method: 'GET'})
                 .then(response => {
                     commit('setUserLoggedIn', response.data);
+                    dispatch('getLoggedInUserProfile');
                     resolve(response);
                 })
                 .catch(err => {
@@ -48,6 +52,19 @@ const actions = {
                     reject(err);
                 })
         })
+    },
+    getLoggedInUserProfile: async ({commit}) => {
+        return new Promise((resolve, reject) => {
+            axios({url: '/user-profile/my', method: 'GET'})
+                .then(response => {
+                    commit('setUserProfileOfLoggedInUser', response.data);
+                    console.log(response.data);
+                    resolve(response);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        })
     }
 };
 
@@ -60,6 +77,9 @@ const mutations = {
     },
     setUsersLikedRestaurants: (state, usersLikedRestaurants) => {
         state.usersLikedRestaurants = usersLikedRestaurants;
+    },
+    setUserProfileOfLoggedInUser: (state, userProfile) => {
+        state.userProfile = userProfile;
     }
 };
 

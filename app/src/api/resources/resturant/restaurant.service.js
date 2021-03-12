@@ -25,7 +25,10 @@ function getValidationForRestaurantEntity() {
         logo: Joi.binary().optional(),
         location: Joi.object().optional(),
         opensAt: Joi.string().required(),
-        closesAt: Joi.string().required()
+        closesAt: Joi.string().required(),
+        city: Joi.string().required(),
+        street: Joi.string().required(),
+        createdAt: Joi.date().optional()
     });
 
     return {schema};
@@ -108,7 +111,10 @@ async function toDto(restaurant, attachedPopulation) {
         closesAt: restaurant.closesAt,
         opensAt: restaurant.opensAt,
         likes: restaurant.likes,
-        numberOfComments: restaurant.numberOfComments
+        numberOfComments: restaurant.numberOfComments,
+        street: restaurant.street,
+        city: restaurant.city,
+        address: restaurant.address
     };
 
     if (attachedPopulation) {
@@ -124,7 +130,10 @@ async function toDto(restaurant, attachedPopulation) {
             closesAt: restaurant.closesAt,
             opensAt: restaurant.opensAt,
             likes: restaurant.likes,
-            numberOfComments: restaurant.numberOfComments
+            numberOfComments: restaurant.numberOfComments,
+            street: restaurant.street,
+            city: restaurant.city,
+            address: restaurant.address
         };
     }
 
@@ -139,7 +148,9 @@ function toUpdateEntity(restaurantDtoUpdate) {
         opensAt: restaurantDtoUpdate.opensAt,
         closesAt: restaurantDtoUpdate.closesAt,
         logo: toBinaryData(restaurantDtoUpdate.logo),
-        location: restaurantDtoUpdate.location
+        location: restaurantDtoUpdate.location,
+        city: restaurantDtoUpdate.city,
+        street: restaurantDtoUpdate.street
     };
 }
 
@@ -231,7 +242,10 @@ export default {
         if (notFoundException)
             return {notFoundException};
 
-        let userLikeRestaurantInDb = await UserLikeRestaurant.find({restaurant: restaurantId, user: userLikeRestaurant.user});
+        let userLikeRestaurantInDb = await UserLikeRestaurant.find({
+            restaurant: restaurantId,
+            user: userLikeRestaurant.user
+        });
         if (userLikeRestaurantInDb.length === 0) {
             restaurant.likes = restaurant.likes + 1;
             await Restaurant.findOneAndUpdate({_id: restaurantId}, restaurant, {new: true});
@@ -252,10 +266,16 @@ export default {
         const {restaurant} = await findById(userLikeRestaurantInDb.restaurant);
         restaurant.likes = restaurant.likes - 1;
         await Restaurant.findOneAndUpdate({_id: restaurant._id}, restaurant, {new: true});
-        return {success: {success:true}};
+        return {success: {success: true}};
     },
     async findLikesOfUser(userId) {
         return await UserLikeRestaurant.find({user: userId});
+    },
+    async findRestaurantsByName(name) {
+        const nameRegex = new RegExp("^" + name, "i");
+        const restaurants = await Restaurant.find({name: nameRegex}, { name: 1 });
+
+        return {restaurants};
     },
     async toDto(entity) {
         return await toDto(entity, false);

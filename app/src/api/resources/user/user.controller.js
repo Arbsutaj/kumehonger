@@ -63,7 +63,7 @@ export default {
     async update(req, res) {
         try {
             const {id} = req.params;
-            const {userDto, notAuthorizedException, error} = await userService.update(req.user, id, req.body);
+            const {userDto, notAuthorizedException, error} = await userService.update(req.user._id, id, req.body);
 
             if (notAuthorizedException || error) {
                 if (error)
