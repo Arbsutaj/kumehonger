@@ -6,6 +6,8 @@ import VueRouter from "vue-router";
 import RestaurantOperations from "./components/restaurant/RestaurantOperations";
 import Profile from "@/components/user/profile/Profile";
 import ProfileSettings from "@/components/user/profile/ProfileSettings";
+import LandingPage from "@/components/view/LandingPage";
+import Restaurants from "@/components/view/Restaurants";
 
 const ifAuthenticated = (to, from, next) => {
     if (store.getters.isAuthenticated) {
@@ -30,7 +32,9 @@ const routes = [
     {path: '/add-restaurant', component: RestaurantOperations, beforeEnter: ifAuthenticated},
     {path: '/edit-restaurant/:id', component: RestaurantOperations, props: true, beforeEnter: ifAuthenticated},
     {path: '/user-profile', component: Profile, props: true, beforeEnter: ifAuthenticated},
-    {path: '/profile-settings/:id', component: ProfileSettings, props: true, beforeEnter: ifAuthenticated}
+    {path: '/profile-settings/:id', component: ProfileSettings, props: true, beforeEnter: ifAuthenticated},
+    {path: '/test', component: LandingPage, props: true},
+    {path: '/all-restaurants', component: Restaurants},
 ];
 
 const router = new VueRouter({

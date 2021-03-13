@@ -58,7 +58,6 @@ const actions = {
             axios({url: '/user-profile/my', method: 'GET'})
                 .then(response => {
                     commit('setUserProfileOfLoggedInUser', response.data);
-                    console.log(response.data);
                     resolve(response);
                 })
                 .catch(err => {

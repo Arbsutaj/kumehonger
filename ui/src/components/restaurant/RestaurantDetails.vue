@@ -131,15 +131,6 @@
               </vs-button>
             </template>
           </vs-card>
-          <div class="col-lg-6 menu-item filter-starters">
-            <img src="assets/img/menu/lobster-bisque.jpg" class="menu-img" alt="">
-            <div class="menu-content">
-              <a href="#">Lobster Bisque</a><span>$5.95</span>
-            </div>
-            <div class="menu-ingredients">
-              Lorem, deren, trataro, filede, nerada
-            </div>
-          </div>
         </div>
       </b-tab>
       <b-tab title="Rating" lazy><p>I'm the tab with the very, very long title</p></b-tab>

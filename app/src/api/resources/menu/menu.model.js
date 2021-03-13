@@ -8,16 +8,34 @@ const menuSchema = new Schema({
         ref: 'Restaurant',
         required: [true, 'Menu must be part of an restaurant'],
     },
+    title: {
+        type: String
+    },
     description: {
         type: String,
     },
     servingTime: {
-        type: String,
+        hour: {
+            type: Number,
+            default: 0
+        },
+        minutes: {
+          type: Number,
+          default: 0
+        }
     },
     image: {
         data: Buffer,
         contentType: String
     },
+    category: {
+        type: String,
+        enum: ['general', 'salad', 'starter', 'specialty'],
+        default: 'general'
+    },
+    ingredients: [{
+        type: String
+    }]
 });
 menuSchema.plugin(mongoosePaginate);
 export default mongoose.model('Menu', menuSchema);

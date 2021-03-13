@@ -52,7 +52,11 @@ export default {
     async findByIdAndRetrieveMenus(req, res) {
         try {
             const {id} = req.params;
-            const {restaurant, notFoundException, badParameterException} = await restaurantService.getRestaurantWithMenus(id);
+            const {
+                restaurant,
+                notFoundException,
+                badParameterException
+            } = await restaurantService.getRestaurantWithMenus(id);
 
             if (notFoundException || badParameterException) {
                 if (badParameterException)
@@ -97,7 +101,12 @@ export default {
         try {
             const {id} = req.params;
 
-            const {restaurantDto, notFoundException, unAuthorizedException, error} = await restaurantService.update(id, req.user._id, req.body);
+            const {
+                restaurantDto,
+                notFoundException,
+                unAuthorizedException,
+                error
+            } = await restaurantService.update(id, req.user._id, req.body);
             if (notFoundException || unAuthorizedException || error) {
                 if (notFoundException)
                     return exceptionResponse(res, notFoundException);
@@ -136,19 +145,22 @@ export default {
         }
     },
     async likeRestaurant(req, res) {
-       try {
-           let userLikeRestaurant = {restaurant: req.body.restaurant};
+        try {
+            let userLikeRestaurant = {restaurant: req.body.restaurant};
 
-           userLikeRestaurant = Object.assign({}, userLikeRestaurant, {user: req.user._id});
+            userLikeRestaurant = Object.assign({}, userLikeRestaurant, {user: req.user._id});
 
-           const {userLikeRestaurantInDb, notFoundException} = await restaurantService.likeRestaurant(userLikeRestaurant);
-           if (notFoundException)
-               return exceptionResponse(res, notFoundException);
+            const {
+                userLikeRestaurantInDb,
+                notFoundException
+            } = await restaurantService.likeRestaurant(userLikeRestaurant);
+            if (notFoundException)
+                return exceptionResponse(res, notFoundException);
 
-           return okResponse(res, userLikeRestaurantInDb);
-       } catch (err) {
-           return internalExceptionResponse(res);
-       }
+            return okResponse(res, userLikeRestaurantInDb);
+        } catch (err) {
+            return internalExceptionResponse(res);
+        }
     },
     async removeLikeFromRestaurant(req, res) {
         try {
@@ -156,7 +168,7 @@ export default {
             const userId = req.user._id;
 
             const {success, notFoundException, notAuthorizedException} = await restaurantService.removeLike(id, userId);
-            if (notFoundException || notAuthorizedException ) {
+            if (notFoundException || notAuthorizedException) {
                 if (notFoundException)
                     return exceptionResponse(res, notFoundException);
 

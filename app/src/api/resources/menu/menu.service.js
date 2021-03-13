@@ -5,13 +5,13 @@ async function toDto(menuEntity) {
         restaurant: menuEntity.restaurant,
         description: menuEntity.description,
         servingTime: menuEntity.servingTime,
+        category: menuEntity.category,
+        ingredients: menuEntity.ingredients,
         image: {data: toBase64(menuEntity.image.data), contentType: menuEntity.image.contentType}
     }
 }
 export default {
     async toDto(menu) {
-        const menuDto = await toDto(menu);
-
-        return menuDto;
+        return await toDto(menu);
     }
 }
