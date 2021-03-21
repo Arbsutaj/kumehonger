@@ -24,6 +24,14 @@ const userSchema = new Schema({
     required: true,
     type: Number,
   },
+  gender: {
+    type: String,
+    enum: ['male', 'female'],
+    default: 'female'
+  },
+  dateOfBirth: {
+    type: Date
+  },
   active: {
     type: Boolean,
     default: true,

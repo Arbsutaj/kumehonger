@@ -2,11 +2,11 @@ import UserProfile from "./user.profile.model";
 import userService from "../user.service";
 import {throwNotAuthorizedException, throwNotFoundException, toBase64, toBinaryData} from "../../../helpers/utils";
 
-async function toDto(userProfileEntity) {
+function toDto(userProfileEntity) {
     return {
         id: userProfileEntity._id,
         website: userProfileEntity.website,
-        user: await userService.toDto(userProfileEntity.user),
+        user: userService.toDto(userProfileEntity.user),
         github: userProfileEntity.github,
         twitter: userProfileEntity.twitter,
         instagram: userProfileEntity.instagram,
@@ -82,5 +82,8 @@ export default {
         const userProfileDto = await toDto(userProfileUpdated);
 
         return {userProfileDto};
+    },
+    toDto(entity) {
+        return toDto(entity);
     }
 }

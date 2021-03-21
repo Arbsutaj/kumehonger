@@ -10,9 +10,16 @@ import {
 import {BadParameterException} from "../exception/bad-parameter-exception";
 
 export default {
-    async signUp(req, res) {
+    async register(req, res) {
         try {
-            const {value, error} = await userService.validateSignUpRequest(req.body);
+            const userRequest = req.body;
+            let userGender = 'female';
+            if (userRequest.gender) {
+                if (userRequest.gender === 2)
+                    userGender = 'male';
+            }
+            const userRequestMapped = Object.assign({}, userRequest, {gender: userGender});
+            const {value, error} = await userService.validateSignUpRequest(userRequestMapped);
             if (error)
                 return validationExceptionResponse(res, error)
 
@@ -22,7 +29,7 @@ export default {
 
             const {user} = await userService.toEntity(value);
             const userCreated = await User.create(user);
-            const {userDto} = await userService.toDto(userCreated);
+            const {userDto} = userService.toDto(userCreated);
 
             return okResponse(res, userDto);
         } catch (err) {

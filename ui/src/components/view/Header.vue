@@ -13,6 +13,12 @@
                     <li v-for="(childMenuItem, j) in menuItem.children" :key="j"><a v-on:click="navigateTo(childMenuItem.route)">{{childMenuItem.name}}</a></li>
                   </ul>
                 </li>
+                <li class="active" v-if="!isLoggedIn">
+                  <a v-on:click="navigateTo('/register')">Login or Register</a>
+                </li>
+                <li class="active" v-else>
+                  <a v-on:click="logout()">Logout</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -36,17 +42,25 @@
 import {SideBar} from "../side-bar/SideBarItems";
 
 export default {
-  name: "HeaderComponent",
+  name: "Header",
   data: () => ({
     menuItems: SideBar
   }),
   methods: {
     navigateTo: function(path) {
       this.$router.push(path);
+    },
+    logout: async function () {
+      await this.$store.dispatch('AUTH_LOGOUT');
+      await this.$router.push('/login');
+    }
+  },
+  computed: {
+    isLoggedIn: function () {
+      return this.$store.getters.isAuthenticated
     }
   },
   created() {
-    console.log(this.menuItems);
   }
 }
 </script>
@@ -283,13 +297,14 @@ input:focus, textarea:focus {
 }
 
 .banner-area {
-  padding: 400px 0 350px;
+  padding: 150px 150px;
   background-color: #b0b0b0;
   background-image: url("../../assets/images/banner-bg.jpg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  position: relative
+  position: relative;
+  height: 150px !important;
 }
 
 .banner-area .prime-color {
@@ -311,5 +326,4 @@ input:focus, textarea:focus {
     padding: 200px 0 140px
   }
 }
-
 </style>

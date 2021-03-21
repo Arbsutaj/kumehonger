@@ -3,7 +3,7 @@ export const SideBar = {
         {
             index: 1,
             name: 'Home',
-            icon: 'home', iconType: 'regular', route: '/test', id: 'home',
+            icon: 'home', iconType: 'regular', route: '/', id: 'home',
             children: []
         },
         {
@@ -33,10 +33,20 @@ export const SideBar = {
             name: 'Create Restaurant',
             icon: 'store',
             iconType: 'regular',
-            route: '/add-restaurant',
+            route: '/create-restaurant',
             id: 'restaurant',
             children: []
+        },
+        {
+            index: 2,
+            name: 'Contact Us',
+            icon: 'contact_page',
+            iconType: 'regular',
+            route: '/create-restaurant',
+            id: 'contact',
+            children: []
         }
+
     ],
     sideBarGroups: [{
         title: 'User',

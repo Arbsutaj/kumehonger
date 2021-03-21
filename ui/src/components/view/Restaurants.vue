@@ -1,14 +1,12 @@
 <template>
   <div>
     <Header></Header>
-    <RestaurantList :restaurants="restaurants"></RestaurantList>
+    <RestaurantList :restaurants="restaurants" :show-action-buttons="true"></RestaurantList>
     <div class="section-padding more-restaurants container mt-3" v-if="showSeeMoreLink">
       <a v-on:click="loadMoreRestaurants()" class="template-btn3 mt-2">See more <span><box-icon type='solid' name='right-arrow-alt'></box-icon></span></a>
     </div>
     <Footer></Footer>
   </div>
-
-
 </template>
 
 <script>
@@ -34,7 +32,7 @@ export default {
       await this.getRestaurants(this.page);
     },
     getRestaurants: async function (page) {
-      const params = new URLSearchParams([['page', page], ['limit', this.pageLimit]]);
+      const params = new URLSearchParams([['page', page], ['limit', this.pageLimit], ['sort', 'createdAt,asc']]);
 
       await this.axios.get(`/restaurant/paginated`, {params}).then(res => {
         if (this.page === res.data.pages)

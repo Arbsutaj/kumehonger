@@ -5,7 +5,7 @@ const state = {
     usersFavoriteRestaurants: [],
     user: null,
     usersLikedRestaurants: [],
-    userProfile: new UserProfile()
+    userProfile: new UserProfile(),
 };
 
 const getters = {
@@ -64,6 +64,9 @@ const actions = {
                     reject(err);
                 })
         })
+    },
+    removeUserStatesOnLogout: ({commit}) => {
+        commit('removeUserStates');
     }
 };
 
@@ -79,6 +82,12 @@ const mutations = {
     },
     setUserProfileOfLoggedInUser: (state, userProfile) => {
         state.userProfile = userProfile;
+    },
+    removeUserStates: (state) => {
+        state.user = null;
+        state.userProfile = new UserProfile();
+        state.usersLikedRestaurants = [];
+        state.usersFavoriteRestaurants = [];
     }
 };
 

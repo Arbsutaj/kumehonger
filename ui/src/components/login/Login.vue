@@ -30,7 +30,7 @@
                 </vs-button>
 
                 <div class="new">
-                    New Here? <a href="#">Create New Account</a>
+                    New Here? <a href="/register">Create New Account</a>
                 </div>
             </div>
         </template>

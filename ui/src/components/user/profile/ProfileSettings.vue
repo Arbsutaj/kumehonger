@@ -1,91 +1,98 @@
 <template>
-  <div class="container bg-white mt-5 mb-5">
-    <div class="row">
-      <div class="col-md-3 border-right">
-        <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-          <img class="rounded-circle mt-5"
-               width="150px"
-               v-bind:src="'data:image/jpeg;base64,' + userProfile.profilePhoto"
-               alt="Profile Photo">
-          <span class="font-weight-bold">{{ getUserFullName() }}</span>
-          <span class="text-black-50">{{ userProfile.user.userDto.email }}</span>
-          <span></span></div>
-      </div>
-      <div class="col-md-5 border-right">
-        <div class="p-3 py-5">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-right">Profile Settings</h4>
-          </div>
-          <div class="row mt-2">
-            <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control"
-                                                                           placeholder="First name"
-                                                                           v-model="userProfile.user.userDto.name">
-            </div>
-            <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control"
-                                                                              placeholder="Surname"
-                                                                              v-model="userProfile.user.userDto.lastName">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-md-12"><label class="labels">Phone</label><input v-model="userProfile.phone" type="text"
-                                                                             class="form-control"
-                                                                             placeholder="Enter phone number"></div>
-            <div class="col-md-12"><label class="labels">Mobile</label><input v-model="userProfile.mobile" type="text"
-                                                                              class="form-control"
-                                                                              placeholder="Enter mobile number"></div>
-            <div class="col-md-12"><label class="labels">Street</label><input v-model="userProfile.street" type="text"
-                                                                              class="form-control"
-                                                                              placeholder="Enter street"></div>
-            <div class="col-md-12"><label class="labels">Address</label><input v-model="userProfile.address" type="text"
-                                                                               class="form-control"
-                                                                               placeholder="Enter address"></div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-md-6"><label class="labels">Country</label><input v-model="userProfile.country" type="text"
-                                                                              class="form-control"
-                                                                              placeholder="country"></div>
-            <div class="col-md-6"><label class="labels">State/Region</label><input v-model="userProfile.state"
-                                                                                   type="text" class="form-control"
-                                                                                   placeholder="state"></div>
-          </div>
-
+  <div>
+    <Header></Header>
+    <div class="container bg-white mt-5 mb-5">
+      <div class="row">
+        <div class="col-md-3 border-right">
+          <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+            <img class="rounded-circle mt-5"
+                 width="150px"
+                 v-bind:src="'data:image/jpeg;base64,' + userProfile.profilePhoto"
+                 alt="Profile Photo">
+            <span class="font-weight-bold">{{ getUserFullName() }}</span>
+            <span class="text-black-50">{{ userProfile.user.userDto.email }}</span>
+            <span></span></div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="p-3 py-5">
-          <div class="d-flex justify-content-between align-items-center experience"><span>Social Media</span></div>
-          <div class="col-md-12"><label class="labels">Website</label><input v-model="userProfile.website" type="text"
-                                                                             class="form-control"
-                                                                             placeholder="Website">
-          </div>
-          <br>
-          <div class="col-md-12">
+        <div class="col-md-5 border-right">
+          <div class="p-3 py-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="text-right">Profile Settings</h4>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control"
+                                                                             placeholder="First name"
+                                                                             v-model="userProfile.user.userDto.name">
+              </div>
+              <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control"
+                                                                                placeholder="Surname"
+                                                                                v-model="userProfile.user.userDto.lastName">
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-12"><label class="labels">Phone</label><input v-model="userProfile.phone" type="text"
+                                                                               class="form-control"
+                                                                               placeholder="Enter phone number"></div>
+              <div class="col-md-12"><label class="labels">Mobile</label><input v-model="userProfile.mobile" type="text"
+                                                                                class="form-control"
+                                                                                placeholder="Enter mobile number"></div>
+              <div class="col-md-12"><label class="labels">Street</label><input v-model="userProfile.street" type="text"
+                                                                                class="form-control"
+                                                                                placeholder="Enter street"></div>
+              <div class="col-md-12"><label class="labels">Address</label><input v-model="userProfile.address" type="text"
+                                                                                 class="form-control"
+                                                                                 placeholder="Enter address"></div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6"><label class="labels">Country</label><input v-model="userProfile.country" type="text"
+                                                                                class="form-control"
+                                                                                placeholder="country"></div>
+              <div class="col-md-6"><label class="labels">State/Region</label><input v-model="userProfile.state"
+                                                                                     type="text" class="form-control"
+                                                                                     placeholder="state"></div>
+            </div>
 
-            <label class="labels">Instagram</label>
-            <input v-model="userProfile.instagram"
-                   type="text"
-                   class="form-control"
-                   placeholder="Instagram">
           </div>
-          <br>
-          <div class="col-md-12">
-            <label class="labels">Facebook</label>
-            <input v-model="userProfile.facebook" type="text" class="form-control" placeholder="Facebook">
-          </div>
-          <div class="mt-5 text-center">
-            <button class="btn btn-primary profile-button" type="button" v-on:click="save()">Save Profile</button>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 py-5">
+            <div class="col-md-12 mt-5"><label class="labels">Website</label><input v-model="userProfile.website" type="text"
+                                                                               class="form-control"
+                                                                               placeholder="Website">
+            </div>
+            <br>
+            <div class="col-md-12">
+
+              <label class="labels">Instagram</label>
+              <input v-model="userProfile.instagram"
+                     type="text"
+                     class="form-control"
+                     placeholder="Instagram">
+            </div>
+            <br>
+            <div class="col-md-12">
+              <label class="labels">Facebook</label>
+              <input v-model="userProfile.facebook" type="text" class="form-control" placeholder="Facebook">
+            </div>
+            <div class="mt-5 text-center">
+              <button class="btn btn-primary profile-button" type="button" v-on:click="save()">Save Profile</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <Footer></Footer>
   </div>
+
 </template>
 
 <script>
 import {UserProfile} from "@/components/user/profile/user.profile";
+import Header from "@/components/view/Header";
+import Footer from "@/components/view/Footer";
 
 export default {
   name: "ProfileSettings",
+  components: {Footer, Header},
   data: () => ({
     userProfile: new UserProfile()
   }),

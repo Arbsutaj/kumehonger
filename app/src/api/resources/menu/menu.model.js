@@ -30,12 +30,19 @@ const menuSchema = new Schema({
     },
     category: {
         type: String,
-        enum: ['general', 'salad', 'starter', 'specialty'],
+        enum: ['general', 'salad', 'starter', 'speciality'],
         default: 'general'
     },
     ingredients: [{
         type: String
-    }]
+    }],
+    price: {
+        type: Number
+    },
+    isMenuOfTheWeek: {
+        type: Boolean,
+        default: false
+    }
 });
 menuSchema.plugin(mongoosePaginate);
 export default mongoose.model('Menu', menuSchema);

@@ -43,6 +43,8 @@ function getValidationForUserEntity() {
             .required(),
         password: Joi.string().required(),
         role: Joi.number().integer(),
+        dateOfBirth: Joi.date().required(),
+        gender: Joi.string().required()
     });
 
     return {schema};
@@ -76,14 +78,16 @@ async function toUpdateEntity(userDto) {
     }
 }
 
-async function toDto(user) {
+function toDto(user) {
     const userDto = {
         id: user._id,
         name: user.firstName,
         lastName: user.lastName,
         email: user.email,
         role: user.role,
-        active: user.active
+        active: user.active,
+        gender: user.gender,
+        dateOfBirth: user.dateOfBirth
     };
 
     return {userDto};
@@ -143,8 +147,8 @@ export default {
 
         return {user};
     },
-    async toDto(entity) {
-        const {userDto} = await toDto(entity);
+    toDto(entity) {
+        const {userDto} = toDto(entity);
 
         return {userDto};
     },

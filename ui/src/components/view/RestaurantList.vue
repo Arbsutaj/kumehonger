@@ -11,16 +11,15 @@
         </div>
       </div>
       <div class="row">
-        <div class="food-card col-md-4 mt-5 col-sm-6" v-for="(restaurant, i) in restaurants" :key="i"
-             v-on:click="navigateToRestaurantDetails(restaurant.id)">
+        <div class="food-card col-md-4 mt-5 col-sm-6" v-for="(restaurant, i) in restaurants" :key="i">
           <div class="single-food  mt-sm-0">
-            <div class="food-img">
+            <div class="food-img" v-on:click="navigateToRestaurantDetails(restaurant.id)">
               <img v-bind:src="'data:image/jpeg;base64,'+restaurant.logo" class="img-fluid" alt="">
             </div>
             <div class="food-content">
               <div class="d-flex justify-content-between">
                 <h5>{{ restaurant.name }}</h5>
-                <div class="icons d-flex flex-row">
+                <div class="icons d-flex flex-row" v-if="showActionButtons">
                   <vs-button icon color="rgb(245, 209, 66)" v-if="isUsersFavorite(restaurant.id)">
                     <box-icon type='solid' name='star' v-on:click="removeFavoriteRestaurant(restaurant.id)"></box-icon>
                   </vs-button>
@@ -52,6 +51,7 @@ export default {
       type: Array,
       default: () => []
     },
+    showActionButtons: {}
   },
   data:() => ({
     usersFavoriteRestaurants: [],
@@ -59,7 +59,7 @@ export default {
   }),
   methods: {
     navigateToRestaurantDetails: function (id) {
-      console.log(id);
+      this.$router.push(`/restaurant-details/${id}`);
     },
     getUsersFavoriteRestaurant: async function () {
       this.$store.dispatch('getUsersFavoriteRestaurants').then(() => {
@@ -141,6 +141,7 @@ export default {
 
 .food-area .food-content {
   max-height: 150px;
+  min-height: 150px;
   overflow: hidden;
 }
 
@@ -243,14 +244,13 @@ input:focus, textarea:focus {
 
 .food-img img {
   min-height: 350px;
+  max-height: 350px;
   object-fit: fill;
-
 }
 
 .food-area .food-img {
   overflow: hidden;
   object-fit: fill;
-
 }
 
 .food-area .food-img img {

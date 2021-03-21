@@ -5,10 +5,9 @@
         <div class="row">
           <div class="col-md-6">
             <div class="single-widget single-widget1">
-              <a href="index.html"><img src="../../assets/images/logo/logo2.png" alt=""></a>
-              <p class="mt-3">Which morning fourth great won't is to fly bearing man. Called unto shall seed, deep,
-                herb set seed land divide after over first creeping. First creature set upon stars deep male gathered
-                said she'd an image spirit our</p>
+              <h2>Kumehonger</h2>
+              <p class="mt-3">This is a page where you can find best restaurants of Kosovo and their location
+              create a restaurant, add menu of it, also add daily menu :) </p>
             </div>
           </div>
           <div class="col-md-6 align-self-center">
@@ -19,7 +18,7 @@
                   <i class="fa fa-map-marker"></i>
                 </div>
                 <div class="info-text">
-                  <p>1234 Some St San Francisco, CA 94102, US 1.800.123.4567 </p>
+                  <p>Kosovo, Prishtine Bregu i Diellit, Str. Qamil Bala, Entr.15, No. 9</p>
                 </div>
               </div>
               <div class="d-flex">
@@ -27,7 +26,7 @@
                   <i class="fa fa-phone"></i>
                 </div>
                 <div class="info-text">
-                  <p>(123) 456 78 90</p>
+                  <p>(383) 49 - 875 - 446</p>
                 </div>
               </div>
               <div class="d-flex">
@@ -35,7 +34,7 @@
                   <i class="fa fa-envelope-o"></i>
                 </div>
                 <div class="info-text">
-                  <p>support@axiomthemes.com</p>
+                  <p>sutajarb@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -75,6 +74,9 @@ export default {
 
 <style scoped>
 
+h2 {
+  color: #ffb606;
+}
 .footer-area .footer {
   background: #131230
 }
@@ -107,10 +109,6 @@ export default {
 
 .footer-widget .single-widget i {
   color: inherit
-}
-
-.footer-widget2 {
-  background: #f9f9ff
 }
 
 .footer-widget2 .single-widget h5 {

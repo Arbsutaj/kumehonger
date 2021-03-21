@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'vuesax/dist/vuesax.css';
 import 'material-icons/iconfont/material-icons.css';
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css'
 import 'boxicons';
 import router from './routes';
 import axios from 'axios';
@@ -15,6 +17,8 @@ import store from './store';
 import Dropdown from 'vue-simple-search-dropdown';
 import VueGeolocation from 'vue-browser-geolocation';
 import moment from 'moment';
+import VueMaterial from 'vue-material';
+
 
 Vue.config.productionTip = false;
 Vue.use(BootstrapVue, IconsPlugin, BootstrapVueIcons);
@@ -23,6 +27,7 @@ Vue.use(VueRouter);
 Vue.use(VueAxios, axios);
 Vue.use(Dropdown);
 Vue.use(VueGeolocation);
+Vue.use(VueMaterial);
 
 Vue.filter('formatDate', function(value) {
     if (value) {

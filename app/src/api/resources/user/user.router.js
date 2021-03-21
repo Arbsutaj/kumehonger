@@ -4,7 +4,7 @@ import {isAdmin} from "../../middlewares/roles-policy";
 import {authentication} from "../../../config/config";
 
 export const userRouter = express.Router();
-userRouter.post('/signUp', userController.signUp);
+userRouter.post('/register', userController.register);
 userRouter
     .route('/:id')
     .get(isAdmin, userController.findById)
