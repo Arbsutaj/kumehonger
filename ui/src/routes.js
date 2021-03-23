@@ -9,6 +9,7 @@ import RestaurantSettings from "@/components/view/RestaurantSettings";
 import Register from "@/components/view/Register";
 import Login from "@/components/view/Login";
 import FavoriteRestaurants from "@/components/view/FavoriteRestaurants";
+import ContactUs from "@/components/view/ContactUs";
 
 const ifAuthenticated = (to, from, next) => {
     if (store.getters.isAuthenticated) {
@@ -37,7 +38,8 @@ const routes = [
     {path: '/profile-settings/:id', component: ProfileSettings, props: true, beforeEnter: ifAuthenticated},
     {path: '/restaurant-details/:id', component: RestaurantDetailsView, props: true},
     {path: '/user-profile', component: Profile, props: true, beforeEnter: ifAuthenticated},
-    {path: '/favorite-restaurants', component: FavoriteRestaurants, beforeEnter: ifAuthenticated}
+    {path: '/favorite-restaurants', component: FavoriteRestaurants, beforeEnter: ifAuthenticated},
+    {path: '/contact-us', component: ContactUs}
 
 ];
 

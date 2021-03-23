@@ -3,27 +3,63 @@
     <Header></Header>
 
     <RestaurantList :restaurants="restaurants" :show-action-buttons="false"></RestaurantList>
-    <div class="more-restaurants  mt-2">
+    <div class="container">
+      <div class="row justify-content-end more-restaurants">
+        <a v-on:click="navigateToAllRestaurants()" class="template-btn3 mt-2">See all <span><box-icon type='solid'
+                                                                                                      name='right-arrow-alt'></box-icon></span></a>
+      </div>
+    </div>
+
+    <div class="reservation-area section-padding-menu text-center">
       <div class="container">
-        <div class="row justify-content-end mb-3">
-          <a v-on:click="navigateToAllRestaurants()" class="template-btn3 mt-2">See all <span><box-icon type='solid'
-                                                                                                        name='right-arrow-alt'></box-icon></span></a>
+        <div class="row">
+          <div class="col-lg-12">
+            <h2>Below are the ingredients of the food</h2>
+            <h4 class="mt-4">above restaurants daily menus</h4>
+          </div>
         </div>
       </div>
     </div>
-    <hr>
-    <div class="section-top2">
-      <span class="style-change mt-2 mb-2">daily menus</span>
-      <div class="container mt-3">
-        <vueper-slides class="no-shadow"
-                       :visible-slides="3"
-                       slide-multiple
-                       :gap="3"
-                       :slide-ratio="1 / 4"
-                       :dragging-distance="200"
-                       :breakpoints="{ 800: { visibleSlides: 2, slideMultiple: 2 } }">
-          <vueper-slide v-for="(i, index) in menus" :key="index" :image="'data:image/jpeg;base64,' +i.image.data" @mouseenter="navigateToRestaurant($event)" />
-        </vueper-slides>
+
+    <div class="daily-menu-area section-padding">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="section-top2 text-center">
+              <h3>Our <span>daily</span> menus</h3>
+              <p><i>daily menus of most liked restaurants</i></p>
+            </div>
+          </div>
+        </div>
+        <div v-for="(menu, i) in menus" :key="i">
+          <div class="row" v-if="menu[0]">
+            <div class="col-lg-5 col-md-6 align-self-center">
+              <h1>0{{ getIndex(1, i) }}.</h1>
+              <div class="menu-text">
+                <h3><span>{{ menu[0].title }}</span></h3>
+                <p class="pt-3">{{ menu[0].ingredients.toString() }}</p>
+                <span class="style-change">€{{ menu[0].price }}</span>
+              </div>
+            </div>
+            <div class="col-lg-5 offset-lg-2 col-md-6 align-self-center mt-4 mt-md-0">
+              <img :src="'data:image/jpeg;base64,'+menu[0].image.data" alt="" class="img-fluid">
+            </div>
+          </div>
+          <div class="row mt-5" v-if="menu[1]">
+            <div class="col-lg-5 col-md-6 align-self-center order-2 order-md-1 mt-4 mt-md-0">
+              <img :src="'data:image/jpeg;base64,'+menu[1].image.data" alt="" class="img-fluid">
+            </div>
+            <div class="col-lg-5 offset-lg-2 col-md-6 align-self-center order-1 order-md-2">
+              <h1>0{{ getIndex(2, i) }}.</h1>
+              <div class="menu-text">
+                <h3><span>{{ menu[1].title }}</span></h3>
+                <p class="pt-3">{{ menu[1].ingredients.toString() }}</p>
+                <span class="style-change">€{{ menu[1].price }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
     <Footer></Footer>
@@ -35,18 +71,17 @@
 import Header from "@/components/view/Header";
 import Footer from "@/components/view/Footer";
 import RestaurantList from "@/components/view/RestaurantList";
-import { VueperSlides, VueperSlide } from "vueperslides";
-import "vueperslides/dist/vueperslides.css";
 
 
 export default {
   name: "LandingPage",
-  components: {RestaurantList, Header, Footer, VueperSlides, VueperSlide},
+  components: {RestaurantList, Header, Footer},
   data: () => ({
     restaurants: [],
     page: 1,
     pageLimit: 6,
-    menus: []
+    menus: [],
+    index: 1
   }),
   methods: {
     loadRestaurants: async function () {
@@ -58,16 +93,26 @@ export default {
         await this.loadMenus(restaurants);
       });
     },
-    navigateToAllRestaurants: function() {
+    navigateToAllRestaurants: function () {
       this.$router.push('/all-restaurants');
     },
-    navigateToRestaurant: function(menu) {
-      console.log(menu);
+    getIndex: function (firstOrSecond, index) {
+      if (firstOrSecond === 1)
+        return firstOrSecond * index + (index + 1);
+
+      return firstOrSecond * index + 2;
     },
-    loadMenus: async function(restaurants) {
+    loadMenus: async function (restaurants) {
       await this.axios.put(`menu/of-the-week`, restaurants).then((resp) => {
-        this.menus = resp.data;
-      })
+        for (let i = 0; i < resp.data.length; i++) {
+          let menus = [];
+          menus.push(resp.data[i]);
+          if (++i <= resp.data.length)
+            menus.push(resp.data[i]);
+
+          this.menus.push(menus);
+        }
+      });
     }
   },
   created() {
@@ -79,30 +124,6 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Playfair+Display:400,700");
-
-
-/*h4 {*/
-/*  color: #fff;*/
-/*  font-family: "Roboto", sans-serif;*/
-/*  font-size: 24px !important;*/
-/*  font-weight: 400;*/
-/*  font-style: italic;*/
-/*  text-transform: capitalize*/
-/*}*/
-
-/*h5 {*/
-/*  color: #131230;*/
-/*  font-size: 16px !important;*/
-/*  font-family: "Playfair Display", serif;*/
-/*  font-weight: 300;*/
-/*}*/
-
-/*.section-padding span {*/
-/*  color: #ffb606 !important;*/
-/*  font-size: 16px !important;*/
-/*  font-family: "Playfair Display", serif;*/
-/*  font-weight: 300;*/
-/*}*/
 
 ul {
   margin: 0;
@@ -144,6 +165,21 @@ b, sup, sub, u, del {
   color: #f8b600
 }
 
+h2 {
+  color: #fff;
+  font-family: "Playfair Display", serif;
+  font-size: 42px !important;
+  font-weight: 700
+}
+
+h4 {
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  font-size: 24px !important;
+  font-weight: 400;
+  font-style: italic;
+  text-transform: capitalize
+}
 
 .template-btn3 {
   color: #131230;
@@ -177,7 +213,7 @@ b, sup, sub, u, del {
 
 .section-top2 .style-change {
   color: #ffb606;
-  font-family: "Roboto", sans-serif;
+  font-family: "Playfair Display", sans-serif;
   font-size: 25px;
   font-weight: 700;
   -webkit-transition: .5s;
@@ -189,13 +225,77 @@ b, sup, sub, u, del {
 
 h3 {
   color: #131230;
-  font-family: "Playfair Display", serif;
+  font-family: "Playfair Display", serif !important;
   font-size: 36px !important;
   font-weight: 700
 }
 
-.more-restaurants a {
-  display: block;
+.daily-menu-area img {
+  max-width: 300px;
+  max-height: 300px;
+  min-width: 300px;
+  min-height: 300px;
+
+}
+
+.daily-menu-area span {
+  color: #ffb606
+}
+
+.daily-menu-area h1 {
+  color: #131230;
+  font-family: "Playfair Display", serif !important;
+  font-style: inherit;
+  position: relative
+}
+
+.daily-menu-area h1:after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 90px;
+  width: 200px;
+  height: 1px;
+  background: #131230
+}
+
+.daily-menu-area .style-change {
+  font-family: "Roboto", sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  display: block
+}
+
+.daily-menu-area .menu-text {
+  padding-right: 150px;
+}
+
+@media (max-width: 575.98px) {
+  .daily-menu-area .menu-text {
+    padding-left: 0
+  }
+}
+
+h1 {
+  padding-right: 300px;
+}
+
+.pt-3 {
+  color: #777;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.reservation-area {
+  background-image: url("../../assets/images/reservation-bg.jpg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover
+}
+
+.section-padding-menu {
+  padding: 130px 0
 }
 
 </style>

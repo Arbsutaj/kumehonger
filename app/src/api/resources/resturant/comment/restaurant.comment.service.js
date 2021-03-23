@@ -85,20 +85,22 @@ export default {
             restaurantCommentsDto.push(comments.docs[i]);
         }
 
-        let userIdsFromComments = restaurantCommentsDto.map(comment => comment.user);
+        let userIdsFromComments = restaurantCommentsDto.map(comment => comment.user._id);
         const userIds = [...new Set(userIdsFromComments)];
 
-        const users = await UserProfile.find({user: { "$in" : userIds}});
+        const users = await UserProfile.find({user: { "$in" : userIds}}).populate('user');
         let userMap = new Map();
-        users.forEach(user => { userMap.set(user.user.toString(), userProfileService.toDto(user._doc));});
+        users.forEach(user => { userMap.set(user.user._id.toString(), userProfileService.toDto(user._doc, true));});
         const restaurantCommentsWithUserProfile = restaurantCommentsDto.map(r => {
             return {
                 id: r._id,
                 restaurant: r.restaurant,
-                user: userMap.get(r.user),
                 description: r.description,
                 createdAt: r.createdAt,
-                userId: r.user
+                userId: r.user._id.toString(),
+                userName: r.user.firstName,
+                userLastName: r.user.lastName,
+                user: userMap.get(r.user._id.toString()),
             };
         });
 

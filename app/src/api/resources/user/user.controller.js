@@ -104,5 +104,20 @@ export default {
         } catch (err) {
             return internalExceptionResponse(res);
         }
+    },
+    async changePassword(req, res) {
+        try {
+            const changePasswordRequest = req.body;
+            const userId = req.user._id;
+
+            const {passwordNotMatchError, userUpdated} = await userService.changePassword(changePasswordRequest, userId);
+            if (passwordNotMatchError)
+                return exceptionResponse(res, passwordNotMatchError);
+
+            return okResponse(res, userUpdated);
+        } catch (err) {
+            console.log(err);
+            return internalExceptionResponse(res);
+        }
     }
 };

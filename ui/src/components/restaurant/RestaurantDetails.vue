@@ -77,14 +77,14 @@
                     <div class="d-flex justify-content-between" v-if="comment.user">
                       <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
                                                              v-bind:src="'data:image/jpeg;base64,'+ comment.user.profilePhoto" width="40" alt="">
-                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">@username</span><span
+                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">{{comment.userName + ' ' + comment.userLastName}}</span><span
                             class="day">{{ comment.createdAt | formatDate }}</span></div>
                       </div>
                     </div>
                     <div class="d-flex justify-content-between" v-else>
                       <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
                                                              src="../../assets/user.png" width="40" alt="">
-                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">@username</span><span
+                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">{{comment.userName + ' ' + comment.userLastName}}</span><span
                             class="day">{{ comment.createdAt | formatDate }}</span></div>
                       </div>
                     </div>

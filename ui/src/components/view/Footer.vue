@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-md-6">
             <div class="single-widget single-widget1">
-              <h2>Kumehonger</h2>
+              <h2>Ku me <span class="style-change">honger?</span></h2>
               <p class="mt-3">This is a page where you can find best restaurants of Kosovo and their location
               create a restaurant, add menu of it, also add daily menu :) </p>
             </div>
@@ -75,6 +75,12 @@ export default {
 <style scoped>
 
 h2 {
+  font-family: "Playfair Display", sans-serif;
+  font-style: italic;
+  color: #fff;
+}
+
+.style-change {
   color: #ffb606;
 }
 .footer-area .footer {
@@ -104,7 +110,9 @@ h2 {
 }
 
 .footer-widget .single-widget h5 {
-  color: #ffb606
+  color: #ffb606;
+  font-family: "Playfair Display", sans-serif;
+  font-style: italic;
 }
 
 .footer-widget .single-widget i {
@@ -112,7 +120,7 @@ h2 {
 }
 
 .footer-widget2 .single-widget h5 {
-  color: #131230
+  color: #131230;
 }
 
 .footer-copyright {

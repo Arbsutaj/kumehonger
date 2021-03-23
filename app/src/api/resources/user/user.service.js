@@ -128,7 +128,10 @@ export default {
             return {validationError};
         }
 
-        const {user, correctCredentialsError} = await validateUserAuthentication(loginRequest.email, loginRequest.password);
+        const {
+            user,
+            correctCredentialsError
+        } = await validateUserAuthentication(loginRequest.email, loginRequest.password);
 
         if (correctCredentialsError)
             return {correctCredentialsError};
@@ -214,5 +217,17 @@ export default {
 
         const userDto = await toDto(user);
         return {deactivatedUserDto: userDto};
+    },
+    async changePassword(changePasswordRequest, userId) {
+        const user = await User.findById(userId);
+        const isPasswordCorrect = await comparePassword(changePasswordRequest.oldPassword, user.password);
+        if (!isPasswordCorrect)
+            return {passwordNotMatchError: {status: 400, message: 'Passwords do not match!'}};
+
+        const passwordEncoded = await encryptPassword(changePasswordRequest.newPassword);
+        const userUpdated = Object.assign({}, user, {password: passwordEncoded});
+        const userInDb = await User.findOneAndUpdate({_id: userId}, {password: passwordEncoded}, {new: true});
+
+        return {userUpdated: toDto(userInDb)};
     }
 };

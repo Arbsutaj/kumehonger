@@ -42,9 +42,15 @@ export const SideBar = {
             name: 'Contact Us',
             icon: 'contact_page',
             iconType: 'regular',
-            route: '/create-restaurant',
+            route: '/contact-us',
             id: 'contact',
             children: []
+        },
+        {
+            index: 3,
+            name: 'Profile',
+            route: '/user-profile',
+            id: 'user-profile'
         }
 
     ],

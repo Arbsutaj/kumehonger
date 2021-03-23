@@ -90,13 +90,15 @@ export default {
                 limit: parseInt(limit, 10) || 6,
                 sort : {
                     createdAt: -1
-                }
+                },
+                populate: 'user'
             };
 
             const {restaurantComments} = await restaurantCommentService.findCommentsByRestaurantIdPaginated(id, options);
 
             return okResponse(res, restaurantComments);
         } catch (err) {
+            console.log(err);
             return internalExceptionResponse(res);
         }
     },

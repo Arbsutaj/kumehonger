@@ -4,9 +4,9 @@
       <div class="row">
         <div class="col-md-5">
           <div class="section-top">
-            <h3><span class="style-change">we serve</span> <br>delicious food</h3>
-            <p class="pt-3">They're fill divide i their yielding our after have him fish on there for greater man
-              moveth, moved Won't together isn't for fly divide mids fish firmament on net.</p>
+            <h3><span class="style-change">we find you</span> <br>delicious food</h3>
+            <p class="pt-3">Here you can find the most famous restaurants and their menus
+            view all the ingredients of the menu and also view the most liked restaurants.</p>
           </div>
         </div>
       </div>
