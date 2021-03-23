@@ -1,5 +1,5 @@
 import axios from "axios";
-import {UserProfile} from "@/components/user/profile/user.profile";
+import {UserProfile} from "@/components/user/transport/user.profile";
 
 const state = {
     usersFavoriteRestaurants: [],

@@ -153,9 +153,9 @@
 </template>
 
 <script>
-import {UserProfile} from './user.profile';
-import Header from "@/components/view/Header";
-import Footer from "@/components/view/Footer";
+import {UserProfile} from '../transport/user.profile';
+import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 
 export default {
   name: "Profile",

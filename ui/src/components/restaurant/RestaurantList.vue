@@ -1,0 +1,336 @@
+<template>
+  <section class="food-area section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="section-top">
+            <h3><span class="style-change">we find you</span> <br>delicious food</h3>
+            <p class="pt-3">Here you can find the most famous restaurants and their menus
+            view all the ingredients of the menu and also view the most liked restaurants.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="restaurant-card col-md-4 mt-5 col-sm-6" v-for="(restaurant, i) in restaurants" :key="i">
+          <div class="single-restaurant  mt-sm-0">
+            <div class="restaurant-img" v-on:click="navigateToRestaurantDetails(restaurant.id)">
+              <img v-bind:src="'data:image/jpeg;base64,'+restaurant.logo" class="img-fluid" alt="">
+            </div>
+            <div class="restaurant-content">
+              <div class="d-flex justify-content-between">
+                <h5>{{ restaurant.name }}</h5>
+                <div class="icons d-flex flex-row" v-if="showActionButtons">
+                  <vs-button icon color="rgb(245, 209, 66)" v-if="isUsersFavorite(restaurant.id)">
+                    <box-icon type='solid' name='star' v-on:click="removeFavoriteRestaurant(restaurant.id)"></box-icon>
+                  </vs-button>
+                  <vs-button icon color="rgb(245, 209, 66)" v-else>
+                    <box-icon type='regular' name='star' v-on:click="addFavoriteRestaurant(restaurant.id)"></box-icon>
+                  </vs-button>
+                  <vs-button icon danger v-if="isLikedByUser(restaurant.id)">
+                    <box-icon type='solid' name='heart' v-on:click="removeLikeFromRestaurant(restaurant.id)"></box-icon>
+                  </vs-button>
+                  <vs-button icon danger v-else>
+                    <box-icon type='regular' name='heart' v-on:click="likeRestaurant(restaurant.id)"></box-icon>
+                  </vs-button>
+                </div>
+              </div>
+              <p class="restaurant-description">{{ restaurant.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+export default {
+  name: "RestaurantList",
+  props: {
+    restaurants: {
+      type: Array,
+      default: () => []
+    },
+    showActionButtons: {}
+  },
+  data:() => ({
+    usersFavoriteRestaurants: [],
+    usersLikedRestaurants: []
+  }),
+  methods: {
+    navigateToRestaurantDetails: function (id) {
+      this.$router.push(`/restaurant-details/${id}`);
+    },
+    getUsersFavoriteRestaurant: async function () {
+      this.$store.dispatch('getUsersFavoriteRestaurants').then(() => {
+        this.usersFavoriteRestaurants = this.$store.getters.getUsersFavoriteRestaurants;
+      });
+    },
+    getUserRestaurantsLiked: async function () {
+      await this.$store.dispatch('getUsersLikedRestaurants').then(() => {
+        this.usersLikedRestaurants = this.$store.getters.getUsersLikedRestaurants;
+      });
+    },
+    isUsersFavorite: function (restaurantId) {
+      return this.usersFavoriteRestaurants.find(favorite => favorite.restaurant === restaurantId);
+    },
+    isLikedByUser: function (restaurantId) {
+      return this.usersLikedRestaurants.find(like => like.restaurant === restaurantId);
+    },
+    addFavoriteRestaurant: async function (restaurantId) {
+      const favoriteRestaurant = {restaurant: restaurantId};
+
+      await this.axios.post('/favorite-restaurant/', favoriteRestaurant)
+          .then((res) => {
+            const favoriteRestaurant = res.data;
+            this.usersFavoriteRestaurants.push(favoriteRestaurant);
+            this.$store.commit('setUsersFavoriteRestaurants', this.usersFavoriteRestaurants);
+          }).catch(() => {
+          });
+    },
+    removeFavoriteRestaurant: async function (restaurantId) {
+      const favoriteRestaurantId = this.usersFavoriteRestaurants.find(favorite => favorite.restaurant === restaurantId)._id;
+
+      await this.axios.delete(`/favorite-restaurant/${favoriteRestaurantId}`)
+          .then(() => {
+            const index = this.usersFavoriteRestaurants.findIndex(favorite => favorite.restaurant === restaurantId);
+            this.usersFavoriteRestaurants.splice(index, 1);
+            this.$store.commit('setUsersFavoriteRestaurants', this.usersFavoriteRestaurants);
+            this.$emit('removeFromFavorites');
+          })
+          .catch(() => {
+          });
+
+    },
+    likeRestaurant: async function (restaurantId) {
+      const userLikeRestaurant = {restaurant: restaurantId};
+
+      await this.axios.post('/restaurant/like', userLikeRestaurant)
+          .then((res) => {
+            const userLikeRestaurant = res.data;
+            this.usersLikedRestaurants.push(userLikeRestaurant);
+            this.$store.commit('setUsersLikedRestaurants', this.usersLikedRestaurants);
+          }).catch(() => {
+          });
+    },
+    removeLikeFromRestaurant: async function (restaurantId) {
+      const userLikeRestaurantId = this.usersLikedRestaurants.find(like => like.restaurant === restaurantId)._id;
+
+      await this.axios.delete(`restaurant/remove-like/${userLikeRestaurantId}`)
+          .then(() => {
+            const index = this.usersLikedRestaurants.findIndex(like => like.restaurant === restaurantId);
+            this.usersLikedRestaurants.splice(index, 1);
+            this.$store.commit('setUsersLikedRestaurants', this.usersLikedRestaurants);
+          }).catch(() => {
+          });
+    }
+  },
+  async created() {
+    if (this.$store.getters.isAuthenticated) {
+      await this.getUsersFavoriteRestaurant();
+      await this.getUserRestaurantsLiked();
+    }
+  }
+}
+</script>
+
+<style scoped>
+.more-restaurants a {
+  float: right;
+}
+
+.food-area .restaurant-content {
+  max-height: 150px;
+  min-height: 150px;
+  overflow: hidden;
+}
+
+.food-area .restaurant-content .restaurant-description {
+  text-overflow: ellipsis;
+}
+
+body {
+  color: #777;
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  font-weight: 400
+}
+
+h1 {
+  color: #fff;
+  font-family: "Playfair Display", serif;
+  font-size: 60px !important;
+  font-weight: 700;
+  font-style: italic
+}
+
+h2 {
+  color: #fff;
+  font-family: "Playfair Display", serif;
+  font-size: 42px !important;
+  font-weight: 700
+}
+
+h3 {
+  color: #131230;
+  font-family: "Playfair Display", serif;
+  font-size: 36px !important;
+  font-weight: 700
+}
+
+h4 {
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  font-size: 24px !important;
+  font-weight: 400;
+  font-style: italic;
+  text-transform: capitalize
+}
+
+h5 {
+  color: #131230;
+  font-family: "Playfair Display", serif;
+  text-transform: capitalize;
+  font-size: 20px !important;
+  font-weight: 700
+}
+
+h6 {
+  color: #fff;
+  font-size: 16px !important;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  text-transform: uppercase
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none
+}
+
+a:hover, a:focus {
+  text-decoration: none
+}
+
+input:focus, textarea:focus {
+  outline: none
+}
+
+.food-area {
+  background-image: url("../../assets/images/food-bg.png");
+  background-repeat: no-repeat;
+  background-position: top right;
+  position: relative
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .food-area {
+    background-image: none
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .food-area {
+    background-image: none
+  }
+}
+
+@media (max-width: 575.98px) {
+  .food-area {
+    background-image: none
+  }
+}
+
+.restaurant-img img {
+  min-height: 350px;
+  max-height: 350px;
+  object-fit: fill;
+}
+
+.food-area .restaurant-img {
+  overflow: hidden;
+  object-fit: fill;
+}
+
+.food-area .restaurant-img img {
+  -webkit-transition: .5s;
+  -moz-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s;
+}
+
+.food-area .restaurant-content {
+  padding: 30px;
+  background: #f9f9ff;
+  -webkit-transition: .5s;
+  -moz-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s;
+}
+
+.food-area .restaurant-content pt-3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.food-area .restaurant-content .style-change {
+  color: #ffb606;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  -webkit-transition: .5s;
+  -moz-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s
+}
+
+.food-area .restaurant-content p {
+  -webkit-transition: .5s;
+  -moz-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s;
+}
+
+.food-area .single-restaurant:hover img {
+  -webkit-transform: scale(1.1, 1.1);
+  -moz-transform: scale(1.1, 1.1);
+  -ms-transform: scale(1.1, 1.1);
+  -o-transform: scale(1.1, 1.1);
+  transform: scale(1.1, 1.1)
+}
+
+.food-area .single-restaurant:hover .restaurant-content {
+  background: #ffb606
+}
+
+.food-area .single-restaurant:hover .restaurant-content .style-change {
+  color: #131230
+}
+
+.food-area .single-restaurant:hover .restaurant-content p {
+  color: #131230
+}
+
+.restaurant-card {
+  max-height: 516px;
+}
+
+.restaurant-card:hover {
+  cursor: pointer;
+}
+
+.section-padding {
+  padding: 40px 0;
+}
+
+.section-top {
+  margin-bottom: 80px
+}
+
+.section-top .style-change {
+  color: #ffb606;
+  font-style: italic
+}
+
+</style>

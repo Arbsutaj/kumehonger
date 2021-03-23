@@ -6,6 +6,7 @@ import {authenticationRouter} from "./resources/authentication/authentication.ro
 import {favoriteRestaurantRouter} from "./resources/favorite-restaurant/favorite.restaurant.router";
 import {restaurantCommentRouter} from "./resources/resturant/comment/restaurant.comment.router";
 import {userProfileRouter} from "./resources/user/profile/user.profile.router";
+import {contactUsRouter} from "./resources/contact-us/contact.us.router";
 
 export const restRouter = express.Router();
 restRouter.use('/auth', authenticationRouter);
@@ -15,3 +16,4 @@ restRouter.use('/restaurant', restaurantRouter);
 restRouter.use('/menu', menuRouter);
 restRouter.use('/favorite-restaurant', favoriteRestaurantRouter);
 restRouter.use('/restaurant-comment', restaurantCommentRouter);
+restRouter.use('/contact-us', contactUsRouter);

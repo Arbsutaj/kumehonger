@@ -1,182 +1,187 @@
 <template>
-  <div class="restaurant-details">
-    <div class="container">
-      <md-tabs md-alignment="centered" class="mt-3">
-        <md-tab id="tab-home" md-label="Details" md-icon="info">
-          <hr>
-          <div class="row justify-content-center">
-            <h4>{{ restaurant.name }}</h4>
-          </div>
-          <div class="row food-img justify-content-center mt-2">
-            <img :src="'data:image/jpeg;base64,'+restaurant.logo">
-          </div>
+  <div>
+    <Header></Header>
+    <div class="restaurant-details">
+      <div class="container section-padding">
+        <md-tabs md-alignment="centered" class="mt-3">
+          <md-tab id="tab-home" md-label="Details" md-icon="info">
+            <hr>
+            <div class="row justify-content-center">
+              <h4>{{ restaurant.name }}</h4>
+            </div>
+            <div class="row restaurant-img justify-content-center mt-2">
+              <img :src="'data:image/jpeg;base64,'+restaurant.logo">
+            </div>
 
-          <div class="row justify-content-center mt-2">
-            <p>{{ restaurant.description }}</p>
-          </div>
-          <div class="row justify-content-center mt-2">
-            <p>{{ restaurant.city + ', ' + restaurant.street }}</p>
-          </div>
-          <vs-row class="mt-2" justify="center">
-            <vs-button danger icon v-if="isLikedByUser(restaurant.id)"
-                       v-on:click="removeLikeFromRestaurant(restaurant.id)">
-              <box-icon name="heart" type="solid"></box-icon>
-              <span class="span">{{ restaurant.likes }}</span>
-            </vs-button>
-            <vs-button danger icon v-else v-on:click="likeRestaurant(restaurant.id)">
-              <box-icon name="heart" type="regular"></box-icon>
-              <span class="span">{{ restaurant.likes }}</span>
-            </vs-button>
-            <template v-if="isUsersFavorite(restaurant.id)">
-              <vs-button color="rgb(245, 209, 66)" icon
-                         v-on:click="removeFavoriteRestaurant(restaurant.id)">
-                <box-icon type="solid" name="star"></box-icon>
+            <div class="row justify-content-center mt-2">
+              <p>{{ restaurant.description }}</p>
+            </div>
+            <div class="row justify-content-center mt-2">
+              <p>{{ restaurant.city + ', ' + restaurant.street }}</p>
+            </div>
+            <vs-row class="mt-2" justify="center">
+              <vs-button danger icon v-if="isLikedByUser(restaurant.id)"
+                         v-on:click="removeLikeFromRestaurant(restaurant.id)">
+                <box-icon name="heart" type="solid"></box-icon>
+                <span class="span">{{ restaurant.likes }}</span>
               </vs-button>
-
-            </template>
-            <template v-else>
-              <vs-button color="rgb(245, 209, 66)" icon
-                         v-on:click="addFavoriteRestaurant(restaurant.id)">
-                <box-icon name="star" type="regular"></box-icon>
+              <vs-button danger icon v-else v-on:click="likeRestaurant(restaurant.id)">
+                <box-icon name="heart" type="regular"></box-icon>
+                <span class="span">{{ restaurant.likes }}</span>
               </vs-button>
-            </template>
-            <vs-button class="btn-chat" shadow>
-              <box-icon name="chat"></box-icon>
-              <span class="span">{{ restaurant.numberOfComments }}</span>
-            </vs-button>
-            <vs-button shadow :to="'/edit-restaurant/'+restaurant.id" v-if="isOwnerOfRestaurant">
-              <box-icon name="edit"></box-icon>
-            </vs-button>
-          </vs-row>
-        </md-tab>
-        <md-tab id="tab-pages" md-label="Comments" md-icon="comment">
-          <hr>
-          <div>
-            <div class="container mt-5 mb-5">
-              <div class="d-flex justify-content-center row">
-                <div class="col-md-8">
-                  <div class="d-flex flex-row align-items-center add-comment p-2 bg-white rounded" v-if="hasUserProfile()">
-                    <img
-                        class="rounded-circle" v-bind:src="'data:image/jpeg;base64,' + profilePhotoOfLoggedInUser()"
-                        width="40"><input v-model="restaurantComment.description" v-on:keyup.enter="addComment()"
-                                          type="text"
-                                          class="form-control border-0 no-box-shadow ml-1"
-                                          placeholder="Leave a constructive comment...">
-                  </div>
-                  <div class="d-flex flex-row align-items-center add-comment p-2 bg-white rounded" v-else>
-                    <img
-                        class="rounded-circle" src="../../assets/user.png"
-                        width="40"><input v-model="restaurantComment.description" v-on:keyup.enter="addComment()"
-                                          type="text"
-                                          class="form-control border-0 no-box-shadow ml-1"
-                                          placeholder="Leave a constructive comment...">
-                  </div>
-                </div>
-                <div class="col-md-8" v-for="(comment, i) in restaurantComments" :key="i">
-                  <div class="p-3 bg-white mt-2 rounded" style="border: 1px solid rgba(0, 0, 0, .07) !important;">
-                    <div class="d-flex justify-content-between" v-if="comment.user">
-                      <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
-                                                             v-bind:src="'data:image/jpeg;base64,'+ comment.user.profilePhoto" width="40" alt="">
-                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">{{comment.userName + ' ' + comment.userLastName}}</span><span
-                            class="day">{{ comment.createdAt | formatDate }}</span></div>
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-between" v-else>
-                      <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
-                                                             src="../../assets/user.png" width="40" alt="">
-                        <div class="d-flex flex-column ml-2"><span class="font-weight-bold">{{comment.userName + ' ' + comment.userLastName}}</span><span
-                            class="day">{{ comment.createdAt | formatDate }}</span></div>
-                      </div>
-                    </div>
-                    <div class="comment-text text-justify mt-2">
-                      <p v-if="i !== editable">{{ comment.description }}</p>
-                      <b-textarea v-model="comment.description" v-if="i === editable">
-                      </b-textarea>
-                    </div>
-                    <div class="d-flex justify-content-end align-items-center" v-if="isOwnerOfComment(comment)">
-                      <vs-button icon color="danger"
-                                 v-if="i !== editable"
-                                 v-on:click="deleteComment(comment.id)">
-                        <box-icon name="trash-alt" type="solid"></box-icon>
-                      </vs-button>
-                      <div v-if="i !== editable">
-                        <vs-button icon color="success" flat
-                                   v-on:click="editComment(i)">
-                          <box-icon name="edit" type="regular"></box-icon>
-                        </vs-button>
-                      </div>
-                      <div class="d-flex justify-content-end align-items-center" v-else>
-                        <vs-button v-on:click="cancelEditingComment()" dark shadow>Cancel
-                        </vs-button>
-                        <vs-button v-on:click="saveComment(comment)" success flat>Save</vs-button>
-                      </div>
+              <template v-if="isUsersFavorite(restaurant.id)">
+                <vs-button color="rgb(245, 209, 66)" icon
+                           v-on:click="removeFavoriteRestaurant(restaurant.id)">
+                  <box-icon type="solid" name="star"></box-icon>
+                </vs-button>
 
+              </template>
+              <template v-else>
+                <vs-button color="rgb(245, 209, 66)" icon
+                           v-on:click="addFavoriteRestaurant(restaurant.id)">
+                  <box-icon name="star" type="regular"></box-icon>
+                </vs-button>
+              </template>
+              <vs-button class="btn-chat" shadow>
+                <box-icon name="chat"></box-icon>
+                <span class="span">{{ restaurant.numberOfComments }}</span>
+              </vs-button>
+              <vs-button shadow :to="'/edit-restaurant/'+restaurant.id" v-if="isOwnerOfRestaurant">
+                <box-icon name="edit"></box-icon>
+              </vs-button>
+            </vs-row>
+          </md-tab>
+          <md-tab id="tab-pages" md-label="Comments" md-icon="comment">
+            <hr>
+            <div>
+              <div class="container mt-5 mb-5">
+                <div class="d-flex justify-content-center row">
+                  <div class="col-md-8">
+                    <div class="d-flex flex-row align-items-center add-comment p-2 bg-white rounded"
+                         v-if="hasUserProfile()">
+                      <img
+                          class="rounded-circle" v-bind:src="'data:image/jpeg;base64,' + profilePhotoOfLoggedInUser()"
+                          width="40"><input v-model="restaurantComment.description" v-on:keyup.enter="addComment()"
+                                            type="text"
+                                            class="form-control border-0 no-box-shadow ml-1"
+                                            placeholder="Leave a constructive comment...">
+                    </div>
+                    <div class="d-flex flex-row align-items-center add-comment p-2 bg-white rounded" v-else>
+                      <img
+                          class="rounded-circle" src="../../assets/user.png"
+                          width="40"><input v-model="restaurantComment.description" v-on:keyup.enter="addComment()"
+                                            type="text"
+                                            class="form-control border-0 no-box-shadow ml-1"
+                                            placeholder="Leave a constructive comment...">
+                    </div>
+                  </div>
+                  <div class="col-md-8" v-for="(comment, i) in restaurantComments" :key="i">
+                    <div class="p-3 bg-white mt-2 rounded" style="border: 1px solid rgba(0, 0, 0, .07) !important;">
+                      <div class="d-flex justify-content-between" v-if="comment.user">
+                        <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
+                                                               v-bind:src="'data:image/jpeg;base64,'+ comment.user.profilePhoto"
+                                                               width="40" alt="">
+                          <div class="d-flex flex-column ml-2"><span
+                              class="font-weight-bold">{{ comment.userName + ' ' + comment.userLastName }}</span><span
+                              class="day">{{ comment.createdAt | formatDate }}</span></div>
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between" v-else>
+                        <div class="d-flex flex-row user"><img class="rounded-circle img-fluid img-responsive"
+                                                               src="../../assets/user.png" width="40" alt="">
+                          <div class="d-flex flex-column ml-2"><span
+                              class="font-weight-bold">{{ comment.userName + ' ' + comment.userLastName }}</span><span
+                              class="day">{{ comment.createdAt | formatDate }}</span></div>
+                        </div>
+                      </div>
+                      <div class="comment-text text-justify mt-2">
+                        <p v-if="i !== editable">{{ comment.description }}</p>
+                        <b-textarea v-model="comment.description" v-if="i === editable">
+                        </b-textarea>
+                      </div>
+                      <div class="d-flex justify-content-end align-items-center" v-if="isOwnerOfComment(comment)">
+                        <vs-button icon color="danger"
+                                   v-if="i !== editable"
+                                   v-on:click="deleteComment(comment.id)">
+                          <box-icon name="trash-alt" type="solid"></box-icon>
+                        </vs-button>
+                        <div v-if="i !== editable">
+                          <vs-button icon color="success" flat
+                                     v-on:click="editComment(i)">
+                            <box-icon name="edit" type="regular"></box-icon>
+                          </vs-button>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center mt-2" v-else>
+                          <button v-on:click="cancelEditingComment()" class="template-btn2">Cancel</button>
+                          <button v-on:click="saveComment(comment)" class="template-btn">Save</button>
+                        </div>
+
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <a class="template-btn3 mt-2" v-on:click="loadMoreComments()" v-if="showViewMoreButton">View more</a>
-        </md-tab>
-        <md-tab id="tab-posts" md-label="Menus" md-icon="lunch_dining">
-          <hr>
-          <section class="update-area section-padding">
-            <div class="row">
-              <div class="col-md-4 mt-2" v-for="(menu, i) in restaurantMenus" :key="i">
-                <div class="single-food">
-                  <div class="food-img">
-                    <img :src="'data:image/jpeg;base64,'+menu.image.data" class="img-fluid" alt="">
-                  </div>
-                  <div class="food-content">
-                    <h5>{{ menu.title }}</h5>
-                    <div class="d-flex justify-content-between">
-                      <span class="mr-5 d-block mb-2 mb-lg-0"><i class="fa fa-user-o mr-2"></i>Price</span>
-                      <span class="style-change">€ {{ menu.price }}</span>
+            <a class="template-btn3 mt-2" v-on:click="loadMoreComments()" v-if="showViewMoreButton">View more</a>
+          </md-tab>
+          <md-tab id="tab-posts" md-label="Menus" md-icon="lunch_dining">
+            <hr>
+            <section class="update-area section-padding">
+              <div class="row">
+                <div class="col-md-4 mt-2" v-for="(menu, i) in restaurantMenus" :key="i">
+                  <div class="single-food">
+                    <div class="restaurant-img">
+                      <img :src="'data:image/jpeg;base64,'+menu.image.data" class="img-fluid" alt="">
                     </div>
-                    <div class="d-flex justify-content-between">
+                    <div class="food-content">
+                      <h5>{{ menu.title }}</h5>
+                      <div class="d-flex justify-content-between">
+                        <span class="mr-5 d-block mb-2 mb-lg-0"><i class="fa fa-user-o mr-2"></i>Price</span>
+                        <span class="style-change">€ {{ menu.price }}</span>
+                      </div>
+                      <div class="d-flex justify-content-between">
                       <span class="mr-5 d-block mb-2 mb-lg-0"><i
                           class="fa fa-user-o mr-2"></i>Serving time until: </span>
-                      <span v-if="menu.servingTime.hour">{{ toHoursAndMinutesFullFormat(menu.servingTime) }}</span>
+                        <span v-if="menu.servingTime.hour">{{ toHoursAndMinutesFullFormat(menu.servingTime) }}</span>
+                      </div>
+                      <hr>
+                      <h6>Ingredients</h6>
+                      <p v-if="menu.ingredients">{{ menu.ingredients.toString() }}</p>
                     </div>
-                    <hr>
-                    <h6>Ingredients</h6>
-                    <p v-if="menu.ingredients">{{ menu.ingredients.toString() }}</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </md-tab>
-        <md-tab id="tab-daily-menu" md-label="Daily Menu" md-icon="event">
-          <hr>
-          <section class="update-area section-padding" v-if="menuSelected">
-            <div class="row ">
-              <div class="col-md-4 mt-2" style="margin: 0 auto;">
-                <div class="single-food">
-                  <div class="food-img">
-                    <img :src="'data:image/jpeg;base64,'+menuSelected.image.data" class="img-fluid" alt="">
-                  </div>
-                  <div class="food-content">
-                    <h5>{{ menuSelected.title }}</h5>
-                    <div class="d-flex justify-content-between">
-                      <span class="mr-5 d-block mb-2 mb-lg-0"><i class="fa fa-user-o mr-2"></i>Price</span>
-                      <span class="style-change">€ {{menuSelected.price }}</span>
+            </section>
+          </md-tab>
+          <md-tab id="tab-daily-menu" md-label="Daily Menu" md-icon="event">
+            <hr>
+            <section class="update-area section-padding" v-if="menuSelected">
+              <div class="row ">
+                <div class="col-md-4 mt-2" style="margin: 0 auto;">
+                  <div class="single-food">
+                    <div class="restaurant-img">
+                      <img :src="'data:image/jpeg;base64,'+menuSelected.image.data" class="img-fluid" alt="">
                     </div>
-                    <div class="d-flex justify-content-between">
+                    <div class="food-content">
+                      <h5>{{ menuSelected.title }}</h5>
+                      <div class="d-flex justify-content-between">
+                        <span class="mr-5 d-block mb-2 mb-lg-0"><i class="fa fa-user-o mr-2"></i>Price</span>
+                        <span class="style-change">€ {{ menuSelected.price }}</span>
+                      </div>
+                      <div class="d-flex justify-content-between">
                       <span class="mr-5 d-block mb-2 mb-lg-0"><i
                           class="fa fa-user-o mr-2"></i>Serving time until: </span>
-                      <span > {{ toHoursAndMinutesFullFormat(menuSelected.servingTime) }}</span>
+                        <span> {{ toHoursAndMinutesFullFormat(menuSelected.servingTime) }}</span>
+                      </div>
+                      <hr>
+                      <h6>Ingredients</h6>
+                      <p>{{ menuSelected.ingredients.toString() }}</p>
                     </div>
-                    <hr>
-                    <h6>Ingredients</h6>
-                    <p >{{ menuSelected.ingredients.toString() }}</p>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-          <div v-if="isOwnerOfRestaurant">
+            </section>
+            <div v-if="isOwnerOfRestaurant">
               <div class="center">
                 <vs-table
                     v-model="menuSelected">
@@ -186,7 +191,7 @@
                         Name
                       </vs-th>
                       <vs-th>
-                        Ingredients
+                        Add menu of the week
                       </vs-th>
                     </vs-tr>
                   </template>
@@ -199,30 +204,33 @@
                         {{ menu.title }}
                       </vs-td>
                       <vs-td>
-                        <vs-button v-on:click="makeMenuOfTheWeek(menu)">
-                          Make Menu of the week
-                        </vs-button>
+                        <button v-on:click="makeMenuOfTheWeek(menu)" class="template-btn">
+                          Save
+                        </button>
                       </vs-td>
                     </vs-tr>
                   </template>
                 </vs-table>
               </div>
-          </div>
-        </md-tab>
-      </md-tabs>
+            </div>
+          </md-tab>
+        </md-tabs>
+      </div>
     </div>
+    <Footer></Footer>
   </div>
-
 </template>
 
 <script>
-import {RestaurantComment} from "@/components/restaurant/models/restaurant-comment";
+import {RestaurantComment} from "@/components/restaurant/transport/restaurant-comment";
+import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 
 export default {
   name: 'RestaurantDetails',
-  components: {},
+  components: {Footer, Header},
   computed: {
-    isOwnerOfRestaurant: function() {
+    isOwnerOfRestaurant: function () {
       if (this.$store.getters.getUserLoggedIn)
         return this.restaurant.owner === this.$store.getters.getUserLoggedIn.id;
       return false;
@@ -298,7 +306,9 @@ export default {
       await this.axios.get(`/restaurant/${this.restaurant.id}/with-menu`)
           .then((response) => {
             this.restaurantMenus = response.data.menus;
-            this.restaurantMenus.forEach(menu => { if(menu.isMenuOfTheWeek === true) this.menuSelected = menu;});
+            this.restaurantMenus.forEach(menu => {
+              if (menu.isMenuOfTheWeek === true) this.menuSelected = menu;
+            });
           })
           .catch(() => {
           });
@@ -308,7 +318,7 @@ export default {
 
       await this.axios.get(`/restaurant-comment/by-restaurant-paginated/${this.restaurant.id}`, {params})
           .then((response) => {
-            if (this.currentPage === response.data.pages)
+            if (this.currentPage >= response.data.pages)
               this.showViewMoreButton = false;
 
             this.restaurantComments.push(...response.data.restaurantComments);
@@ -323,16 +333,22 @@ export default {
       this.currentPage++;
       await this.loadComments(this.currentPage);
     },
-    pageChangeHandler: async function (selectedPage) {
-      await this.loadRestaurantComments(this.restaurant.id, selectedPage);
-    },
     addComment: async function () {
       this.restaurantComment.restaurant = this.restaurant.id;
       await this.axios.post(`/restaurant-comment/add`, this.restaurantComment)
           .then((res) => {
             this.restaurantComment = new RestaurantComment();
-            this.restaurantComments.unshift(res.data);
+
+            const restaurantCommentInDb = res.data;
+            restaurantCommentInDb.userName = this.$store.getters.getUserLoggedIn.name;
+            restaurantCommentInDb.userLastName = this.$store.getters.getUserLoggedIn.lastName;
+            restaurantCommentInDb.user  = { profilePhoto: this.profilePhotoOfLoggedInUser() };
+            restaurantCommentInDb.userId  = this.$store.getters.getUserLoggedIn.id;
+            this.restaurantComments.unshift(restaurantCommentInDb);
             this.restaurantComments.splice(this.currentPage * 4, 1);
+            if (this.restaurantComments.length === 4)
+              this.showViewMoreButton = true;
+
             this.restaurant.numberOfComments += 1;
           }).catch(() => {
           });
@@ -374,7 +390,7 @@ export default {
     isAuthenticated: function () {
       return this.$store.getters.isAuthenticated;
     },
-    hasUserProfile: function() {
+    hasUserProfile: function () {
       if (this.isAuthenticated()) {
         if (this.$store.getters.getLoggedInUserProfile.profilePhoto)
           return true;
@@ -413,7 +429,7 @@ export default {
       const minutes = servingTime.minutes.toString().length < 2 ? '0' + servingTime.minutes : servingTime.minutes;
       return hour + ':' + minutes;
     },
-    makeMenuOfTheWeek: async function(menu) {
+    makeMenuOfTheWeek: async function (menu) {
       const menuOfTheWeek = {id: menu.id, restaurant: menu.restaurant, isMenuOfTheWeek: true};
       this.menuSelected = menu;
 
@@ -423,8 +439,8 @@ export default {
         this.restaurantMenus[index] = response.data;
       });
     },
-    isOwnerOfComment: function(comment) {
-        return comment.userId === this.$store.getters.getUserLoggedIn.id;
+    isOwnerOfComment: function (comment) {
+      return comment.userId === this.$store.getters.getUserLoggedIn.id;
     }
   },
   async created() {
@@ -511,7 +527,7 @@ h6 {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1)
 }
 
-.food-img img {
+.restaurant-img img {
   max-height: 350px;
   min-height: 350px;
   min-width: 350px;
@@ -568,4 +584,54 @@ h6 {
 .comment-text {
   font-size: 12px
 }
+
+.section-padding {
+  padding: 40px 0;
+}
+
+.template-btn {
+  color: #131230;
+  background: #ffb606;
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  display: inline-block;
+  padding: 12px 30px !important;
+  -webkit-transition: all .5s;
+  -moz-transition: all .5s;
+  -o-transition: all .5s;
+  transition: all 0.5s;
+  margin-left: 20px;
+}
+
+.template-btn:hover {
+  color: #131230;
+  background: transparent;
+  border: 1px solid #ffb606
+}
+
+.template-btn2 {
+  color: #ffb606;
+  background: #131230;
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  display: inline-block;
+  padding: 12px 30px !important;
+  -webkit-transition: all .5s;
+  -moz-transition: all .5s;
+  -o-transition: all .5s;
+  transition: all 0.5s
+}
+
+.template-btn2:hover {
+  color: #131230;
+  background: transparent;
+  border: 1px solid #ffb606
+}
+
 </style>
