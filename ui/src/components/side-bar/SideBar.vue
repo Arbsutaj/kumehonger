@@ -17,7 +17,7 @@
         <vs-button flat v-on:click="logout()">Logout</vs-button>
       </template>
     </vs-navbar>
-    <vs-sidebar
+    <vs-sidebar v-if="isLoggedIn"
         reduce
         hover-expand
         v-model="active"

@@ -22,6 +22,7 @@
     "vue-router": "^3.4.3",
     "vue-simple-search-dropdown": "^1.0.1",
     "vue-sliding-pagination": "^1.1.2",
+    "vueperslides": "^2.9.2",
     "vuesax": "^4.0.1-alpha.24",
     "vuex": "^3.6.0",
     "vuex-persistedstate": "^4.0.0-beta.1"
@@ -33,6 +34,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "vue-material": "^1.0.0-beta-15",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {

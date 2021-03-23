@@ -28,9 +28,10 @@ const actions = {
                 })
         })
     },
-    AUTH_LOGOUT: ({commit}) => {
+    AUTH_LOGOUT: ({dispatch, commit}) => {
         return new Promise((resolve) => {
             commit('AUTH_LOGOUT');
+            dispatch('removeUserStatesOnLogout');
             localStorage.removeItem('token');
             // remove the axios default header
             delete axios.defaults.headers.common['Authorization'];

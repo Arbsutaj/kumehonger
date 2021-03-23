@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const restaurantComment = new Schema({
     user: {
         type: String,
+        ref: 'User',
         required: [true, 'Comment must be of one user!'],
     },
     restaurant: {

@@ -41,7 +41,7 @@
         </template>
         <div class="d-flex flex-wrap justify-content-center restaurants mt-2"
              v-on:click="navigateToNewRestaurantPage()">
-          <div class="add-new" v-if="currentPage === 1">
+          <div class="add-new">
             <img src="@/assets/add-new.png"/>
           </div>
           <div v-for="(restaurant, i) in restaurants" :key="i">
@@ -83,7 +83,7 @@ export default {
   }),
   methods: {
     getRestaurants: async function (page) {
-      await this.setPageLimit(page);
+      await this.setPageLimit();
       const params = new URLSearchParams([['page', page], ['limit', this.pageLimit]]);
       const apiEndpoint = await this.getUrlRequest(this.currentTab);
 
@@ -142,8 +142,8 @@ export default {
     pageChangeHandler: async function (selectedPage) {
       await this.getRestaurants(selectedPage);
     },
-    setPageLimit: async function (page) {
-      if (this.currentTab === 'My-Restaurants' && page === 1) {
+    setPageLimit: async function () {
+      if (this.currentTab === 'My-Restaurants') {
         this.pageLimit = 5;
         return;
       }

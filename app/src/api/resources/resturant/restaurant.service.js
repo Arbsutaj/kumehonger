@@ -277,7 +277,39 @@ export default {
 
         return {restaurants};
     },
+    async deleteRestaurant(id, userId) {
+        let {restaurantFound, notFoundException, unAuthorizedException} = await checkIfIsOwnerOfRestaurant(userId, id);
+
+        if (notFoundException || unAuthorizedException)
+            return {notFoundException, unAuthorizedException};
+
+        await Restaurant.deleteOne({_id: id});
+
+        return {success: {success: true}};
+    },
+    async removeMenuFromRestaurant(id, userId, menuId) {
+        let {restaurantFound, notFoundException, unAuthorizedException} = await checkIfIsOwnerOfRestaurant(userId, id);
+
+        if (notFoundException || unAuthorizedException)
+            return {notFoundException, unAuthorizedException};
+
+        restaurantFound.menus.pull({_id: menuId});
+        restaurantFound.save();
+        return {success: {success: true}};
+    },
     async toDto(entity) {
         return await toDto(entity, false);
+    },
+    async addMenusToRestaurant(menus) {
+        const {restaurant, notFoundException} = await findById(menus[0].restaurant);
+
+        if (notFoundException)
+            return {notFoundException};
+
+        restaurant.menus = [];
+        menus.forEach(menu => restaurant.menus.push(menu));
+        await restaurant.save();
+
+        return {restaurant};
     }
 }

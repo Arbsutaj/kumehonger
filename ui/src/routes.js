@@ -1,11 +1,15 @@
-import MainPage from "./components/main-page/MainPage";
-import RestaurantDetails from "./components/restaurant/RestaurantDetails";
-import Login from "./components/login/Login";
 import store from './store';
 import VueRouter from "vue-router";
-import RestaurantOperations from "./components/restaurant/RestaurantOperations";
 import Profile from "@/components/user/profile/Profile";
 import ProfileSettings from "@/components/user/profile/ProfileSettings";
+import LandingPage from "@/components/view/LandingPage";
+import Restaurants from "@/components/view/Restaurants";
+import RestaurantDetailsView from "@/components/view/RestaurantDetailsView";
+import RestaurantSettings from "@/components/view/RestaurantSettings";
+import Register from "@/components/view/Register";
+import Login from "@/components/view/Login";
+import FavoriteRestaurants from "@/components/view/FavoriteRestaurants";
+import ContactUs from "@/components/view/ContactUs";
 
 const ifAuthenticated = (to, from, next) => {
     if (store.getters.isAuthenticated) {
@@ -24,13 +28,19 @@ const ifNotAuthenticated = (to, from, next) => {
 };
 
 const routes = [
-    {path: '/', component: MainPage, name: 'Home'},
-    {path: '/restaurant-details/:id', component: RestaurantDetails, props: true},
+
+    {path: '/', component: LandingPage},
+    {path: '/register', component: Register},
     {path: '/login', component: Login, beforeEnter: ifNotAuthenticated},
-    {path: '/add-restaurant', component: RestaurantOperations, beforeEnter: ifAuthenticated},
-    {path: '/edit-restaurant/:id', component: RestaurantOperations, props: true, beforeEnter: ifAuthenticated},
+    {path: '/all-restaurants', component: Restaurants},
+    {path: '/create-restaurant', component: RestaurantSettings, beforeEnter: ifAuthenticated},
+    {path: '/edit-restaurant/:id', component: RestaurantSettings, props: true, beforeEnter: ifAuthenticated},
+    {path: '/profile-settings/:id', component: ProfileSettings, props: true, beforeEnter: ifAuthenticated},
+    {path: '/restaurant-details/:id', component: RestaurantDetailsView, props: true},
     {path: '/user-profile', component: Profile, props: true, beforeEnter: ifAuthenticated},
-    {path: '/profile-settings/:id', component: ProfileSettings, props: true, beforeEnter: ifAuthenticated}
+    {path: '/favorite-restaurants', component: FavoriteRestaurants, beforeEnter: ifAuthenticated},
+    {path: '/contact-us', component: ContactUs}
+
 ];
 
 const router = new VueRouter({

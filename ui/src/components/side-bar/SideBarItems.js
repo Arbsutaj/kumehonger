@@ -1,7 +1,58 @@
 export const SideBar = {
     items: [
-        {index: 1, name: 'Home', icon: 'home', iconType: 'regular', route: '/', id: 'home'},
-        {index: 2, name: 'Create Restaurant', icon: 'store', iconType: 'regular', route: '/add-restaurant', id:'restaurant'}
+        {
+            index: 1,
+            name: 'Home',
+            icon: 'home', iconType: 'regular', route: '/', id: 'home',
+            children: []
+        },
+        {
+            index: 1, name: 'Restaurants', icon: 'home', iconType: 'regular', route: '/all-restaurants', id: 'home',
+            children: [
+                {
+                    index: 1,
+                    name: 'All Restaurants',
+                    icon: 'home',
+                    iconType: 'regular',
+                    route: '/all-restaurants',
+                    id: 'home',
+                },
+                {
+                    index: 1,
+                    name: 'Favorite Restaurants',
+                    icon: 'home',
+                    iconType: 'regular',
+                    route: '/favorite-restaurants',
+                    id: 'favorite',
+
+                }
+            ]
+        },
+        {
+            index: 2,
+            name: 'Create Restaurant',
+            icon: 'store',
+            iconType: 'regular',
+            route: '/create-restaurant',
+            id: 'restaurant',
+            children: []
+        },
+        {
+            index: 2,
+            name: 'Contact Us',
+            icon: 'contact_page',
+            iconType: 'regular',
+            route: '/contact-us',
+            id: 'contact',
+            children: []
+        },
+        {
+            index: 3,
+            name: 'Profile',
+            route: '/user-profile',
+            id: 'user-profile'
+        }
+
     ],
     sideBarGroups: [{
         title: 'User',
