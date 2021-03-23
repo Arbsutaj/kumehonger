@@ -225,7 +225,6 @@ export default {
             return {passwordNotMatchError: {status: 400, message: 'Passwords do not match!'}};
 
         const passwordEncoded = await encryptPassword(changePasswordRequest.newPassword);
-        const userUpdated = Object.assign({}, user, {password: passwordEncoded});
         const userInDb = await User.findOneAndUpdate({_id: userId}, {password: passwordEncoded}, {new: true});
 
         return {userUpdated: toDto(userInDb)};

@@ -127,10 +127,10 @@
 </template>
 
 <script>
-import {UserProfile} from "@/components/user/profile/user.profile";
-import Header from "@/components/view/Header";
-import Footer from "@/components/view/Footer";
-import {ChangePasswordRequest} from "@/components/user/change.password.request";
+import {UserProfile} from "@/components/user/transport/user.profile";
+import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
+import {ChangePasswordRequest} from "@/components/user/transport/change.password.request";
 
 export default {
   name: "ProfileSettings",
